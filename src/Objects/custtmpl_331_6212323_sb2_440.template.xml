@@ -1,0 +1,1748 @@
+<?xml version="1.0"?><!DOCTYPE pdf PUBLIC "-//big.faceless.org//report" "report-1.1.dtd">
+<pdf>
+    <#setting locale = "es_MX">
+    <#setting time_zone= "America/Mexico_City">
+    <#setting number_format=",##0.00">
+
+    <#assign "dataXML" = "">
+    <#if custom?has_content>
+        <#if custom.dataXML?has_content>
+            <#assign dataXML = custom.dataXML>
+        </#if>
+        <#setting locale=custom.locale>
+        <#assign labels = custom.labels>
+        <#if custom.certData?has_content>
+            <#assign "certData" = custom.certData>
+        <#else>
+            <#assign "certData" = record>
+        </#if>
+        <#assign "satCodes" = custom.satcodes>
+
+        <#if custom.multiCurrencyFeature == "true">
+            <#assign "currencyCode" = record.currencysymbol>
+            <#assign exchangeRate = record.exchangerate?string.number>
+        <#else>
+            <#assign "currencyCode" = "MXN">
+            <#assign exchangeRate = 1>
+        </#if>
+        <#if custom.oneWorldFeature == "true">
+            <#assign customCompanyInfo = record.subsidiary>
+        <#else>
+            <#assign "customCompanyInfo" = companyinformation>
+        </#if>
+        <#if customer.isperson == "T">
+            <#assign customerName = customer.firstname + ' ' + customer.lastname>
+        <#else>
+            <#assign "customerName" = customer.companyname>
+        </#if>
+        <#assign "summary" = custom.summary>
+        <#assign "totalAmount" = summary.subtotal - summary.totalDiscount>
+        <#assign "companyTaxRegNumber" = custom.companyInfo.rfc>
+        <#assign currencySymbolMap = {"USD":"$","CAD":"$","EUR":"€","AED":"د.إ.‏","AFN":"؋","ALL":"Lek","AMD":"դր.","ARS":"$","AUD":"$","AZN":"ман.","BAM":"KM","BDT":"৳","BGN":"лв.","BHD":"د.ب.‏","BIF":"FBu","BND":"$","BOB":"Bs","BRL":"R$","BWP":"P","BYR":"BYR","BZD":"$","CDF":"FrCD","CHF":"CHF","CLP":"$","CNY":"CN¥","COP":"$","CRC":"₡","CVE":"CV$","CZK":"Kč","DJF":"Fdj","DKK":"kr","DOP":"RD$","DZD":"د.ج.‏","EEK":"kr","EGP":"ج.م.‏","ERN":"Nfk","ETB":"Br","GBP":"£","GEL":"GEL","GHS":"GH₵","GNF":"FG","GTQ":"Q","HKD":"$","HNL":"L","HRK":"kn","HUF":"Ft","IDR":"Rp","ILS":"₪","INR":"টকা","IQD":"د.ع.‏","IRR":"﷼","ISK":"kr","JMD":"$","JOD":"د.أ.‏","JPY":"￥","KES":"Ksh","KHR":"៛","KMF":"FC","KRW":"₩","KWD":"د.ك.‏","KZT":"тңг.","LBP":"ل.ل.‏","LKR":"SL Re","LTL":"Lt","LVL":"Ls","LYD":"د.ل.‏","MAD":"د.م.‏","MDL":"MDL","MGA":"MGA","MKD":"MKD","MMK":"K","MOP":"MOP$","MUR":"MURs","MXN":"$","MYR":"RM","MZN":"MTn","NAD":"N$","NGN":"₦","NIO":"C$","NOK":"kr","NPR":"नेरू","NZD":"$","OMR":"ر.ع.‏","PAB":"B/.","PEN":"S/.","PHP":"₱","PKR":"₨","PLN":"zł","PYG":"₲","QAR":"ر.ق.‏","RON":"RON","RSD":"дин.","RUB":"руб.","RWF":"FR","SAR":"ر.س.‏","SDG":"SDG","SEK":"kr","SGD":"$","SOS":"Ssh","SYP":"ل.س.‏","THB":"฿","TND":"د.ت.‏","TOP":"T$","TRY":"TL","TTD":"$","TWD":"NT$","TZS":"TSh","UAH":"₴","UGX":"USh","UYU":"$","UZS":"UZS","VEF":"Bs.F.","VND":"₫","XAF":"FCFA","XOF":"CFA","YER":"ر.ي.‏","ZAR":"R","ZMK":"ZK"}>
+        <#function fmtc value>
+            <#assign dst =  currencySymbolMap[currencyCode] + value?number?string["0.00"]>
+            <#return dst>
+        </#function>
+    <#else>
+        <#assign "certData" = record>
+    </#if>
+
+    <#assign infoEmpresa = record.subsidiary>
+    <head>
+        <#assign shipmentcost = 0>
+        <link name="NotoSans" type="font" subtype="truetype" src="${nsfont.NotoSans_Regular}" src-bold="${nsfont.NotoSans_Bold}" src-italic="${nsfont.NotoSans_Italic}" src-bolditalic="${nsfont.NotoSans_BoldItalic}" bytes="2" />
+        <#if .locale == "zh_CN">
+            <link name="NotoSansCJKsc" type="font" subtype="opentype" src="${nsfont.NotoSansCJKsc_Regular}" src-bold="${nsfont.NotoSansCJKsc_Bold}" bytes="2" />
+        <#elseif .locale == "zh_TW">
+            <link name="NotoSansCJKtc" type="font" subtype="opentype" src="${nsfont.NotoSansCJKtc_Regular}" src-bold="${nsfont.NotoSansCJKtc_Bold}" bytes="2" />
+        <#elseif .locale == "ja_JP">
+            <link name="NotoSansCJKjp" type="font" subtype="opentype" src="${nsfont.NotoSansCJKjp_Regular}" src-bold="${nsfont.NotoSansCJKjp_Bold}" bytes="2" />
+        <#elseif .locale == "ko_KR">
+            <link name="NotoSansCJKkr" type="font" subtype="opentype" src="${nsfont.NotoSansCJKkr_Regular}" src-bold="${nsfont.NotoSansCJKkr_Bold}" bytes="2" />
+        <#elseif .locale == "th_TH">
+            <link name="NotoSansThai" type="font" subtype="opentype" src="${nsfont.NotoSansThai_Regular}" src-bold="${nsfont.NotoSansThai_Bold}" bytes="2" />
+        </#if>
+
+        <style type="text/css">
+            * {
+                <#if .locale == "zh_CN">
+                    font-family: NotoSans, NotoSansCJKsc, sans-serif;
+                <#elseif .locale == "zh_TW">
+                    font-family: NotoSans, NotoSansCJKtc, sans-serif;
+                <#elseif .locale == "ja_JP">
+                    font-family: NotoSans, NotoSansCJKjp, sans-serif;
+                <#elseif .locale == "ko_KR">
+                    font-family: NotoSans, NotoSansCJKkr, sans-serif;
+                <#elseif .locale == "th_TH">
+                    font-family: NotoSans, NotoSansThai, sans-serif;
+                <#else>
+                    font-family: NotoSans, sans-serif;
+                </#if>
+
+            }
+            body {
+                font-family: Verdana, Helvetica, sans-serif;
+            }
+            table {
+                font-size: 9px;
+                table-layout: fixed;
+            }
+            th {
+                font-weight: bold;
+                font-size: 8px;
+                vertical-align: middle;
+                padding: 5px 6px 3px;
+                background-color: #e3e3e3;
+                color: #161616;
+            }
+            td {
+                padding: 4px 6px;
+                /*border: 1px solid red;*/
+            }
+            td p { align:left }
+            b {
+                font-weight: bold;
+                color: #000000;
+            }
+            table.header td {
+                padding: 0px;
+                font-size: 8px;
+            }
+            table.footer td {
+                padding: 0px;
+                font-size: 8pt;
+            }
+            table.itemtable th {
+                padding-bottom: 10px;
+                padding-top: 10px;
+            }
+            table.desglose td {
+                font-size: 6px;
+                padding-top: 0px;
+                padding-bottom: 0px;
+            }
+            table.body td {
+                padding-top: 2px;
+            }
+            table.total {
+                page-break-inside: avoid;
+            }
+            tr.totalrow {
+                background-color: #e3e3e3;
+                line-height: 200%;
+            }
+            td.totalboxtop {
+                font-size: 9px;
+                background-color: #e3e3e3;
+            }
+            td.addressheader {
+                font-size: 8px;
+                padding-top: 6px;
+                padding-bottom: 2px;
+            }
+            td.subtotal{
+                text-align: right;
+            }
+            td.address {
+                padding-top: 0px;
+            }
+            td.totalboxmid {
+                font-size: 9px;
+                padding-top: 20px;
+                background-color: #e3e3e3;
+            }
+            td.totalboxbot {
+                background-color: #e3e3e3;
+                font-weight: bold;
+            }
+            span {
+                font-size: 9px;
+            }
+            span.title {
+                font-size: 9px;
+            }
+            span.number {
+                font-size: 9px;
+            }
+            span.itemname {
+                font-weight: bold;
+                line-height: 150%;
+            }
+            hr {
+                width: 100%;
+                color: #ffffff;
+                background-color: #e3e3e3;
+                height: 1px;
+            }
+        </style>
+    </head>
+    <body footer="nlfooter" footer-height="11px" padding="0.5in 0.5in 0.5in 0.5in" size="Letter">
+
+        <#assign "desglose_json_body" = record.custbody_efx_fe_tax_json>
+        <#if desglose_json_body?has_content>
+            <#assign "desglose_body" = desglose_json_body?eval>
+            <#assign "desglose_ieps" = desglose_body.rates_ieps>
+            <#assign "desglose_iva" = desglose_body.rates_iva>
+            <#assign "ieps_total" = desglose_body.ieps_total>
+            <#assign "iva_total" = desglose_body.iva_total>
+            <#assign "local_total" = desglose_body.local_total>
+            <#assign "desglose_ret" = desglose_body.rates_retencion>
+            <#assign "desglose_loc" = desglose_body.rates_local>
+            <#assign "desglose_total_discount" = desglose_body.descuentoSinImpuesto>
+            <#assign "cabecera_total" = desglose_body.total>
+            <#assign "cabecera_subtotal" = desglose_body.subtotal>
+        <#else>
+            <#assign "desglose_body" = {}>
+            <#assign "desglose_ieps" = 0>
+            <#assign "desglose_iva" = 0>
+            <#assign "ieps_total" = 0>
+            <#assign "iva_total" = 0>
+            <#assign "local_total" = 0>
+            <#assign "desglose_ret" = 0>
+            <#assign "desglose_loc" = 0>
+            <#assign "desglose_total_discount" = 0>
+            <#assign "cabecera_total" = 0>
+            <#assign "cabecera_subtotal" = 0>
+        </#if>
+
+        <#if dataXML?has_content>
+            <#--  Tabla de informacion cabecera  -->
+            <table style="width: 100%; border-spacing: 0; table-layout: fixed; word-break:break-all;" cellspacing="0" cellpadding="0" >
+                <tbody>
+                    <tr>
+                        <td style="width: 25%;" rowspan="6">&nbsp;</td>
+                        <td style="width: 25%; align: left; vertical-align: top; font-weight:bold;" rowspan="6" font-size="8.5px">
+                        <span>  ${record.subsidiary}</span><br />
+                        <#assign direccion = record.custbody_efx_fe_dirsubs?keep_after("<br />")>
+                        <span>  ${direccion?keep_before_last("<br />")}  </span><br />
+                        <span>RFC: ${dataXML.Emisor.atributos.Rfc}</span><br />
+                        <#--  <span>RFC: ${record.custbody_bit_fact_e_rfc_emisor}</span><br />  -->
+                        <#--  <span>Régimen Fiscal: ${record.custbody_bit_fact_e_regimenfiscal?keep_before(" ")}</span><br />  -->
+                        <span>Régimen Fiscal: ${dataXML.Emisor.atributos.RegimenFiscal}</span><br />
+                        </td>
+
+                        <#if certData?has_content>
+                            <td colspan="4" style="font-size: 10px; width: 40%;" align="right">
+                                <table style="font-weight:bold; height:70.8pt; table-layout: fixed; word-break:break-all;" border="1" font-size="8.5px" >
+                                    <tbody>
+                                        <tr>
+                                            <td style="width: 82pt; align: right;">FACTURA</td>
+                                            <td style="width: 2pt;">:</td>
+                                            <td style="width: 85pt;">${certData.Serie}${certData.FolioResSat}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 78pt; align: right;">Folio Fiscal</td>
+                                            <td style="width: 2pt;">:</td>
+                                            <td style="width: 85pt;">${certData.custbody_mx_cfdi_uuid}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 82pt; align: right;">No. Certificado SAT</td>
+                                            <td style="width: 2pt;">:</td>
+                                            <#if dataXML?has_content>
+                                                <td style="width: 85pt;">&nbsp;${dataXML.Complemento.TimbreFiscalDigital.atributos.NoCertificadoSAT}</td>
+                                            <#else>
+                                                <td style="width: 85pt;">&nbsp;${record.custbody_mx_cfdi_sat_serial}</td>
+                                            </#if>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 82pt; align: right;">No. Certificado</td>
+                                            <td style="width: 2pt;">:</td>
+                                            <td style="width: 85pt;">&nbsp;${certData.custbody_mx_cfdi_issuer_serial}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 90pt; align: right;">Fecha de Expedición</td>
+                                            <td style="width: 2pt;">:</td>
+                                            <#if dataXML?has_content>
+                                                <td style="width: 85pt;">&nbsp;${dataXML.atributos.Fecha}</td>
+                                            <#else>
+                                                <td style="width: 85pt;">&nbsp;${record.trandate?string.iso_nz}T00:00:00  </td>
+                                            </#if>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 100pt; align: right;">Fecha de Certificación</td>
+                                            <td style="width: 2pt;">:</td>
+                                            <td style="width: 85pt;">&nbsp;${certData.custbody_mx_cfdi_certify_timestamp}  </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 87pt; align: right;">Expedida en</td>
+                                            <td style="width: 2pt;">:</td>
+                                            <td style="width: 85pt;">${record.subsidiary.zip} - ${record.subsidiary.city}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+
+                        <#else>
+                            <td colspan="4" style="font-size: 10px; width: 40%;" align="right">
+                                <table style="font-weight:bold; height:70.8pt; table-layout: fixed; word-break:break-all;" border="1" font-size="8.5px" >
+                                    <tbody>
+                                        <tr>
+                                            <td style="width: 82pt; align: right;">FACTURA</td>
+                                            <td style="width: 2pt;">:</td>
+                                            <td style="width: 85pt;">${record.tranid} </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 78pt; align: right;">Folio Fiscal</td>
+                                            <td style="width: 2pt;">:</td>
+                                            <td style="width: 85pt;">${certData.custbody_mx_cfdi_uuid}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 82pt; align: right;">No. Certificado SAT</td>
+                                            <td style="width: 2pt;">:</td>
+                                            <td style="width: 85pt;">&nbsp;${record.custbody_mx_cfdi_sat_serial}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 82pt; align: right;">No. Certificado</td>
+                                            <td style="width: 2pt;">:</td>
+                                            <td style="width: 85pt;">&nbsp;${record.custbody_mx_cfdi_issuer_serial}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 90pt; align: right;">Fecha de Expedición</td>
+                                            <td style="width: 2pt;">:</td>
+                                            <td style="width: 85pt;">&nbsp;${record.trandate?string.iso_nz}T00:00:00  </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 100pt; align: right;">Fecha de Certificación</td>
+                                            <td style="width: 2pt;">:</td>
+                                            <td style="width: 85pt;">&nbsp;${record.custbody_mx_cfdi_certify_timestamp}  </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 87pt; align: right;">Expedida en</td>
+                                            <td style="width: 2pt;">:</td>
+                                            <td style="width: 85pt;">${subsidiary.mainaddress.zip} - ${subsidiary.mainaddress.city}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </#if>
+                    </tr>
+                </tbody>
+            </table>
+
+            <#--  Datos de Orden de cliente, Pedido interno, etc.  -->
+            <table style="width: 100%;">
+                <tbody>
+                <tr style="width: 100%;">
+                    <td style="width: 20%;">&nbsp; Orden del Cliente: &nbsp;  ${record.otherrefnum}  </td>
+                    <td style="width: 40%;">&nbsp; Pedido Interno: &nbsp;     ${record.shipcity}  </td>
+                    <td style="width: 40%;">&nbsp;</td>
+                </tr>
+                <tr style="width: 100%;">
+                    <td  style="width: 20%;">&nbsp; ${record.createdfrom?keep_before("#")}: &nbsp;  ${record.createdfrom?keep_after("#")}  </td>
+                    <td  style="width: 40%;">&nbsp; Representante de ventas: &nbsp;     ${record.salesrep}  </td>
+                    <td  style="width: 40%;">&nbsp; Almacen: &nbsp;     ${record.location}  </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <#--  Datos de ubicaciones Vendido a, Embarcado a  -->
+            <table style="width: 100%; border-left:0.5px single black; border-right:0.5px single black; border-top:0.5px single black; border-bottom:0.5px single black;">
+                <tbody>
+                    <tr>
+                        <td style="align: center; border-bottom:0.5px single black; border-right:0.5px single black; width: 50%;" colspan="4">
+                        <strong>&nbsp;VENDIDO A/SOLD TO</strong>
+                        </td>
+                        <td style="align: center; border-bottom:0.5px single black; width: 50%;" >
+                        <strong>&nbsp;EMBARCADO A/SHIP TO</strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="align: right;  width: 15%;"><b>Nombre</b>:</td>
+                        <td style="border-right:0.5px single black; width: 35%;" colspan="3">${dataXML.Receptor.atributos.Nombre}  </td>
+                        <td style="vertical-align: top; width: 50%;" rowspan="3"> ${record.shipaddress}  </td>
+                    </tr>
+                    <tr>
+                        <td style="align: right; width: 15%;"><b>Bill Address</b>:</td>
+                        <td style="border-right:0.5px single black;  width: 35%;" colspan="3">${record.billaddress}  </td>
+                    </tr>
+                    <tr>
+                        <td style="align: right;  width: 15%;"><b>RFC</b>:</td>
+                        <td style="border-right:0.5px single black; width: 35%;" colspan="3">${dataXML.Receptor.atributos.Rfc}  </td>
+                    </tr>
+                    <tr>
+                        <td style="align: right;  width: 15%;"><b>Uso CFDI</b>:</td>
+                        <#assign uso_cfdi = dataXML.Receptor.atributos.UsoCFDI?string>
+                        <#if uso_cfdi == "D01">
+                            <td colspan="2" style="font-size: 7pt;">D01 - HONORARIOS MÉDICOS, DENTALES Y GASTOS
+                                HOSPITALARIOS
+                            </td>
+                            <#elseif uso_cfdi == "D02">
+                                <td style="border-right:0.5px single black; width: 35%;" colspan="3">D02 - GASTOS MÉDICOS POR INCAPACIDAD O
+                                    DISCAPACIDAD
+                                </td>
+                            <#elseif uso_cfdi == "D03">
+                                <td style="border-right:0.5px single black; width: 35%;" colspan="3">D03 - GASTOS FUNERALES</td>
+                            <#elseif uso_cfdi == "D04">
+                                <td style="border-right:0.5px single black; width: 35%;" colspan="3">D04 - DONATIVOS</td>
+                            <#elseif uso_cfdi == "D05">
+                                <td style="border-right:0.5px single black; width: 35%;" colspan="3">D05 - INTERESES REALES EFECTIVAMENTE PAGADOS POR
+                                    CRÉDITOS HIPOTECARIOS (CASA HABITACIÓN)
+                                </td>
+                            <#elseif uso_cfdi == "D06">
+                                <td style="border-right:0.5px single black; width: 35%;" colspan="3">D06 - APORTACIONES VOLUNTARIAS AL SAR</td>
+                            <#elseif uso_cfdi == "D07">
+                                <td style="border-right:0.5px single black; width: 35%;" colspan="3">D07 - PRIMAS POR SEGUROS DE GASTOS MÉDICOS</td>
+                            <#elseif uso_cfdi == "D08">
+                                <td style="border-right:0.5px single black; width: 35%;" colspan="3">D08 - GASTOS DE TRANSPORTACIÓN ESCOLAR
+                                    OBLIGATORIA
+                                </td>
+                            <#elseif uso_cfdi == "D09">
+                                <td style="border-right:0.5px single black; width: 35%;" colspan="3">D09 - DEPÓSITOS EN CUENTAS PARA EL AHORRO, PRIMAS
+                                    QUE TENGAN COMO BASE PLANES DE PENSIONES
+                                </td>
+                            <#elseif uso_cfdi == "D10">
+                                <td style="border-right:0.5px single black; width: 35%;" colspan="3">D10 - PAGOS POR SERVICIOS EDUCATIVOS
+                                    (COLEGIATURAS)
+                                </td>
+                            <#elseif uso_cfdi == "G01">
+                                <td style="border-right:0.5px single black; width: 35%;" colspan="3">G01 - ADQUISICIÓN DE MERCANCÍAS</td>
+                            <#elseif uso_cfdi == "G02">
+                                <td style="border-right:0.5px single black; width: 35%;" colspan="3">G02 - DEVOLUCIONES, DESCUENTOS O BONIFICACIONES
+                                </td>
+                            <#elseif uso_cfdi == "G03">
+                                <td style="border-right:0.5px single black; width: 35%;" colspan="3">G03 - GASTOS EN GENERAL</td>
+                            <#elseif uso_cfdi == "I01">
+                                <td style="border-right:0.5px single black; width: 35%;" colspan="3">I01 - CONSTRUCCIONES</td>
+                            <#elseif uso_cfdi == "I02">
+                                <td style="border-right:0.5px single black; width: 35%;" colspan="3">I02 - MOBILIARIO Y EQUIPO DE OFICINA POR
+                                    INVERSIONES
+                                </td>
+                            <#elseif uso_cfdi == "I03">
+                                <td style="border-right:0.5px single black; width: 35%;" colspan="3">I03 - EQUIPO DE TRANSPORTE</td>
+                            <#elseif uso_cfdi == "I04">
+                                <td style="border-right:0.5px single black; width: 35%;" colspan="3">I04 - EQUIPO DE CÓMPUTO Y ACCESORIOS</td>
+                            <#elseif uso_cfdi == "I05">
+                                <td style="border-right:0.5px single black; width: 35%;" colspan="3">I05 - DADOS, TROQUELES, MOLDES, MATRICES Y
+                                    HERRAMENTAL
+                                </td>
+                            <#elseif uso_cfdi == "I06">
+                                <td style="border-right:0.5px single black; width: 35%;" colspan="3">I06 - COMUNICACIONES TELEFÓNICAS</td>
+                            <#elseif uso_cfdi == "I07">
+                                <td style="border-right:0.5px single black; width: 35%;" colspan="3">I07 - COMUNICACIONES SATELITALES</td>
+                            <#elseif uso_cfdi == "I08">
+                                <td style="border-right:0.5px single black; width: 35%;" colspan="3">I08 - OTRA MAQUINARIA Y EQUIPO</td>
+                            <#elseif uso_cfdi == "P01">
+                                <td style="border-right:0.5px single black; width: 35%;" colspan="3">P01 - POR DEFINIR</td>
+                            <#elseif uso_cfdi == "S01">
+                                <td style="border-right:0.5px single black; width: 35%;" colspan="3">S01 - SIN EFECTOS FISCALES</td>
+                            <#else>
+                                <td style="border-right:0.5px single black; width: 35%;" colspan="3"></td>
+                        </#if>
+                    </tr>
+                </tbody>
+            </table>
+
+            <#if record.item?has_content>
+                <#assign "total_cajas" = 0><#assign "total_piezas" = 0>
+                <#assign "obj_cajas"= {}>
+                <#assign "line_discount"= 0>
+                <#assign "importe_discount" = []>
+                <#list record.item as item>
+                    <#assign "tipo_articulo" = item.item?keep_before(" ")>
+                    <#if tipo_articulo == "Descuento">
+                    <#assign "importe_discount" = importe_discount+ [item.grossamt]>
+                    <#else>
+                        <#assign "importe_discount" = importe_discount+ [0]>
+                    </#if>
+                </#list>
+                <#assign "importe_discount" = importe_discount+ [0]>
+                <#assign "descuento_total" = 0>
+                <#assign comercioExterior = dataXML.Complemento.ComercioExterior.Mercancias.Mercancia>
+
+                <#--  Si hay Comercio Exterior colocar la tabla completa-->
+                <#if dataXML.Complemento.ComercioExterior?has_content>
+                    <#--  Tabla de articulos  -->
+                    <#if dataXML.Conceptos.Concepto?is_sequence>
+                        <table style="width: 100%; border-left:0.5px single black; border-right:0.5px single black; border-bottom:0.5px single black;  border-top:0.5px single black;  table-layout: fixed; word-break: break-all; border-collapse: collapse; margin-top:20px;">
+                            <#if comercioExterior?has_content>
+                                <#assign contador = 0>
+                                <#assign Conceptos = dataXML.Conceptos.Concepto>
+                                <#list record.item as item>
+                                    <#if item.itemtype != "Discount" || item.itemtype != "Descuento">
+                                        <tr>
+                                            <td colspan="40" style="align: center; border-bottom:0.5px single black;" ><b>Concepto   ${item_index+1} </b></td>
+                                        </tr>
+                                        <#--  Cabecera de tabla  -->
+                                        <tr >
+                                            <td colspan="4" style="border-bottom:0.5px single black; vertical-align: middle; align: center;">
+                                                <strong>ClaveProd <br/>Serv</strong>
+                                            </td>
+                                            <#if comercioExterior?has_content>
+                                                <td colspan="4" style="border-bottom:0.5px single black; vertical-align: middle; align: center; font-size: 8px;">
+                                                    <strong>Fraccion<br/> Arancelaria</strong>
+                                                </td>
+                                            </#if>
+                                            <td colspan="3" style="border-bottom:0.5px single black; vertical-align: middle; align: left; ">
+                                                <strong>No. Parte</strong>
+                                            </td>
+                                            <td colspan="3" style="border-bottom:0.5px single black; vertical-align: middle; align: center; font-size:8px">
+                                                <strong>Cant.</strong>
+                                            </td>
+                                            <td colspan="2" style="border-bottom:0.5px single black; vertical-align: middle; align: left; font-size:7px">
+                                                <strong>Unid.</strong>
+                                            </td>
+                                            <td colspan="3" style="border-bottom:0.5px single black; vertical-align: middle; align: left;">
+                                                <strong>Clave Unidad</strong>
+                                            </td>
+                                            <#if comercioExterior?has_content>
+                                                <td colspan="4" style="border-bottom:0.5px single black; vertical-align: middle; align: left;">
+                                                    <strong>Unidad Aduana</strong>
+                                                </td>
+                                            </#if>
+                                            <td colspan="6" style="border-bottom:0.5px single black; vertical-align: middle; align: left; font-size: 8px;" >
+                                                <strong>Descripcion</strong>
+                                            </td>
+                                            <td colspan="4" style="border-bottom:0.5px single black; vertical-align: middle; align: left; font-size: 8px;">
+                                                <strong>Impuestos</strong>
+                                            </td>
+                                            <td colspan="3" style="border-bottom:0.5px single black; vertical-align: middle; align: right;">
+                                                <strong>Precio Unitario</strong>
+                                            </td>
+                                            <td colspan="4" style="border-bottom:0.5px single black; vertical-align: middle; align: center;">
+                                                <strong>Importe</strong>
+                                            </td>
+                                        </tr>
+
+                                        <tr>
+                                            <td colspan="4" style="align: center; ">${Conceptos[contador].atributos.ClaveProdServ}<br/><br/></td>
+                                            <#if comercioExterior?has_content>
+                                                <td colspan="4" style="align: center; font-size:8px">${comercioExterior[contador].atributos.FraccionArancelaria}<br/><br/></td>
+                                            </#if>
+                                                <td colspan="3" style="align: left; ">${item.item}<br/><br/></td>
+                                                <#assign cantidad = Conceptos[contador].atributos.Cantidad?number>
+                                                <#assign decimales = cantidad?keep_after(".")?number>
+                                                <#if (cantidad gt 0 && cantidad lt 999) && (decimales gt 0)>
+                                                    <td colspan="3" style="align: center; font-size: 6pt;">${cantidad}<br/><br/></td>
+                                                <#elseif cantidad gt 999 && decimales gt 0>
+                                                    <td colspan="3" style="align: center; font-size: 6pt;">${cantidad}<br/><br/></td>
+                                                <#else>
+                                                    <td colspan="3" style="align: center; font-size: 7pt;">${cantidad?string[",##0"]}<br/><br/></td>
+                                                </#if>
+                                                <td colspan="2" style="align: left; ">${item.units}<br/><br/></td>
+                                                <td colspan="3" style="align: left; ">${Conceptos[contador].atributos.ClaveUnidad}<br/><br/></td>
+                                                <#if comercioExterior?has_content>
+                                                    <td colspan="4" style="align: left; ">${item.custcol_efx_fe_ce_uni_aduana}<br/><br/></td>
+                                                </#if>
+                                                <td colspan="6" style="align: left; " >${Conceptos[contador].atributos.Descripcion}<br/><br/></td>
+
+                                                <#assign tras = dataXML.Impuestos.Traslados.Traslado.atributos>
+                                                <#if tras?has_content>
+                                                    <td colspan="4" style="align: left;">${tras.Impuesto} IVA <br/> <span style=" font-size: 7pt">${tras.Importe}</span></td>
+                                                </#if>
+
+                                                <td colspan="3" style="align: right;">${Conceptos[contador].atributos.ValorUnitario?number?string[",##0.00"]}<br/><br/></td>
+                                                <td colspan="4" style="align: center;">${Conceptos[contador].atributos.Importe?number?string[",##0.00"]}<br/><br/></td>
+
+                                        </tr>
+                                        <#if item.inventorydetail?has_content>
+                                            <tr>
+                                                <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4"><strong>Número Serial</strong></td>
+                                                <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4"><strong>Número de Motor</strong></td>
+                                                <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4"><strong>Pedimento</strong></td>
+                                                <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4"><strong>Fecha Entrada</strong></td>
+                                                <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;" colspan="4"><strong>Repuve</strong></td>
+                                            </tr>
+                                            <#assign "detalle_inventario_json" = item.custcol_efx_invdet_json + item.custcol_efx_invdet_json2 + item.custcol_efx_invdet_json3 + item.custcol_efx_invdet_json4 + item.custcol_efx_invdet_json5>
+                                            <#assign "detalle_inventario" = detalle_inventario_json?eval>
+                                            <#list detalle_inventario as detalle_inv>
+                                                <tr>
+                                                    <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4">${detalle_inv.inventorynumber}	         </td>
+                                                    <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4">${detalle_inv.num_motor}</td>
+                                                    <#if detalle_inv.inventorynumber?starts_with("3MU")>
+                                                        <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4">ENSAMBLE EN MEXICO</td>
+                                                    <#else>
+                                                        <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4">${detalle_inv.num_pedimento}</td>
+                                                    </#if>
+                                                    <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4">${detalle_inv.fecha_entrada_pedimento}</td>
+                                                    <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;" colspan="4">${detalle_inv.repuve}</td>
+                                                </tr>
+                                            </#list>
+                                        </#if>
+                                        <#assign contador = contador+1>
+                                    </#if>
+
+                                </#list>
+                                <tr>
+                                    <td colspan="39"><strong>Notas:</strong><br/>${record.memo}</td>
+                                </tr>
+                            </#if>
+                        </table>
+                    <#else>
+                        <table style="width: 100%; border-left:0.5px single black; border-right:0.5px single black; border-bottom:0.5px single black;  border-top:0.5px single black;  table-layout: fixed; word-break: break-all; border-collapse: collapse; margin-top:20px;">
+                            <#list record.item as item>
+                                <tr>
+                                    <td colspan="40" style="align: center; border-bottom:0.5px single black;" ><b>Concepto   ${item_index+1} </b></td>
+                                </tr>
+                                <tr style="height: 18pt;" >
+                                    <td colspan="4" style="border-bottom:0.5px single black; vertical-align: middle; align: center;">
+                                        <strong>ClaveProd <br/>Serv</strong>
+                                    </td>
+                                    <#if comercioExterior>
+                                        <td colspan="4" style="border-bottom:0.5px single black; vertical-align: middle; align: center; font-size: 8px;">
+                                            <strong>Fraccion<br/> Arancelaria</strong>
+                                        </td>
+                                    </#if>
+                                    <td colspan="3" style="border-bottom:0.5px single black; vertical-align: middle; align: left; ">
+                                        <strong>No. Parte</strong>
+                                    </td>
+                                    <td colspan="3" style="border-bottom:0.5px single black; vertical-align: middle; align: center; font-size:8px">
+                                        <strong>Cant.</strong>
+                                    </td>
+                                    <td colspan="2" style="border-bottom:0.5px single black; vertical-align: middle; align: left; font-size:7px">
+                                        <strong>Unid.</strong>
+                                    </td>
+                                    <td colspan="3" style="border-bottom:0.5px single black; vertical-align: middle; align: left;">
+                                        <strong>Clave Unidad</strong>
+                                    </td>
+                                    <#if comercioExterior?has_content>
+                                        <td colspan="4" style="border-bottom:0.5px single black; vertical-align: middle; align: left;">
+                                            <strong>Unidad Aduana</strong>
+                                        </td>
+                                    </#if>
+                                    <td colspan="6" style="border-bottom:0.5px single black; vertical-align: middle; align: left; font-size: 8px;" >
+                                        <strong>Descripcion</strong>
+                                    </td>
+                                    <td colspan="4" style="border-bottom:0.5px single black; vertical-align: middle; align: left; font-size: 8px;">
+                                        <strong>Impuestos</strong>
+                                    </td>
+                                    <td colspan="3" style="border-bottom:0.5px single black; vertical-align: middle; align: right;">
+                                        <strong>Precio Unitario</strong>
+                                    </td>
+                                    <td colspan="4" style="border-bottom:0.5px single black; vertical-align: middle; align: center;">
+                                        <strong>Importe</strong>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td colspan="4" style="align: center; ">${dataXML.Conceptos.Concepto.atributos.ClaveProdServ}<br/><br/></td>
+                                    <td colspan="4" style="align: center; font-size:8px">${dataXML.Complemento.ComercioExterior.Mercancias.Mercancia.atributos.FraccionArancelaria}<br/><br/></td>
+                                    <td colspan="3" style="align: left; ">${item.item}<br/><br/></td>
+                                    <#assign cantidad = dataXML.Conceptos.Concepto.atributos.Cantidad?number>
+                                    <#assign decimales = cantidad?keep_after(".")?number>
+                                    <#if (cantidad gt 0 && cantidad lt 999) && (decimales gt 0)>
+                                        <td colspan="3" style="align: center; font-size: 6pt;">${cantidad}<br/><br/></td>
+                                    <#elseif cantidad gt 999 && decimales gt 0>
+                                        <td colspan="3" style="align: center; font-size: 6pt;">${cantidad}<br/><br/></td>
+                                    <#else>
+                                        <td colspan="3" style="align: center; font-size: 7pt;">${cantidad?string[",##0"]}<br/><br/></td>
+                                    </#if>
+                                    <td colspan="2" style="align: left; ">${item.units}<br/><br/></td>
+                                    <td colspan="3" style="align: left; ">${dataXML.Conceptos.Concepto.atributos.ClaveUnidad}<br/><br/></td>
+                                    <td colspan="4" style="align: left; ">${item.custcol_efx_fe_ce_uni_aduana}<br/><br/></td>
+                                    <td colspan="6" style="align: left; " >${dataXML.Conceptos.Concepto.atributos.Descripcion}<br/><br/></td>
+                            </#list>
+
+                                <#if dataXML.Impuestos.Traslados.Traslado.atributos.Impuesto?has_content>
+                                    <td colspan="4" style="align: left;">${dataXML.Impuestos.Traslados.Traslado.atributos.Impuesto} IVA <br/> <span style=" font-size: 7pt">${dataXML.Impuestos.Traslados.Traslado.atributos.Importe}</span></td>
+                                </#if>
+
+                                <td colspan="3" style="align: right;">${dataXML.atributos.SubTotal?string[",##0.00"]}<br/><br/></td>
+                                <td colspan="4" style="align: center;">${dataXML.atributos.Total?string[",##0.00"]}<br/><br/></td>
+                            </tr>
+                            <#if item.inventorydetail?has_content>
+                                <tr>
+                                    <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4"><strong>Número Serial</strong></td>
+                                    <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4"><strong>Número de Motor</strong></td>
+                                    <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4"><strong>Pedimento</strong></td>
+                                    <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4"><strong>Fecha Entrada</strong></td>
+                                    <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;" colspan="4"><strong>Repuve</strong></td>
+                                </tr>
+                                <#assign "detalle_inventario_json" = item.custcol_efx_invdet_json + item.custcol_efx_invdet_json2 + item.custcol_efx_invdet_json3 + item.custcol_efx_invdet_json4 + item.custcol_efx_invdet_json5>
+                                <#assign "detalle_inventario" = detalle_inventario_json?eval>
+                                <#list detalle_inventario as detalle_inv>
+                                    <tr>
+                                        <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4">${detalle_inv.inventorynumber}	         </td>
+                                        <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4">${detalle_inv.num_motor}</td>
+                                        <#if detalle_inv.inventorynumber?starts_with("3MU")>
+                                            <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4">ENSAMBLE EN MEXICO</td>
+                                        <#else>
+                                            <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4">${detalle_inv.num_pedimento}</td>
+                                        </#if>
+                                        <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4">${detalle_inv.fecha_entrada_pedimento}</td>
+                                        <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;" colspan="4">${detalle_inv.repuve}</td>
+                                    </tr>
+                                </#list>
+                            </#if>
+                            <tr>
+                                <td colspan="39"><strong>Notas:</strong><br/>${record.memo}</td>
+                            </tr>
+                        </table>
+                    </#if>
+                    <#--  Tabla de comercio exterior  -->
+                    <#if comercioExterior?has_content>
+                        <table style="width: 100%; margin-top:20px; border-left:0.5px single black; border-right:0.5px single black; border-top:0.5px single black; border-bottom:0.5px single black;">
+                            <tbody>
+                                <tr>
+                                    <td style="align: left; border-bottom:0.5px single black; width: 50%;" colspan="10">
+                                        <strong>&nbsp;Comercio Exterior</strong>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="align: center; vertical-align: center; width: 25%;" rowspan="8" colspan="2">
+
+                                        <#if dataXML.Receptor.atributos.NumRegIdTrib?has_content>
+                                            <b>No. Registro Receptor:</b><br /><br />
+                                        </#if>
+                                        <#if dataXML.Complemento.ComercioExterior.atributos.TipoCambioUSD?has_content>
+                                            <b>Tipo de Cambio:</b><br /><br />
+                                        </#if>
+                                        <#if dataXML.Complemento.ComercioExterior.atributos.TotalUSD?has_content>
+                                            <b>Total en Dolares:</b><br /><br />
+                                        </#if>
+                                        <#if record.custbody_efx_fe_ce_propietario_numreg?has_content>
+                                            <b>No. Registro Propietario:</b><br /><br />
+                                        </#if>
+                                        <#if record.custbody_efx_fe_ce_motivo_traslado?has_content>
+                                            <b>Motivo de Traslado:</b><br /><br />
+                                        </#if>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="align: left; vertical-align: center; width: 25%;" rowspan="8" colspan="3">
+                                        <#if dataXML.Receptor.atributos.NumRegIdTrib?has_content>
+                                            ${dataXML.Receptor.atributos.NumRegIdTrib}<br /><br />
+                                        </#if>
+                                        <#if dataXML.Complemento.ComercioExterior.atributos.TipoCambioUSD?has_content>
+                                            ${dataXML.Complemento.ComercioExterior.atributos.TipoCambioUSD}<br /><br />
+                                        </#if>
+                                        <#if dataXML.Complemento.ComercioExterior.atributos.TotalUSD?has_content>
+                                            ${dataXML.Complemento.ComercioExterior.atributos.TotalUSD}<br /><br />
+                                        </#if>
+                                        <#if record.custbody_efx_fe_ce_propietario_numreg?has_content>
+                                            ${record.custbody_efx_fe_ce_propietario_numreg}<br /><br />
+                                        </#if>
+                                        <#if record.custbody_efx_fe_ce_motivo_traslado?has_content>
+                                            ${record.custbody_efx_fe_ce_motivo_traslado}<br /><br />
+                                        </#if>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <#assign incotermDescripcion = "">
+                                    <#if dataXML.Complemento.ComercioExterior.atributos.Incoterm == "CFR">
+                                        <#assign incotermDescripcion = "COSTE Y FLETE (PUERTO DE DESTINO CONVENIDO).">
+                                        <#elseif dataXML.Complemento.ComercioExterior.atributos.Incoterm == "CIF">
+                                            <#assign incotermDescripcion = "COSTE, SEGURO Y FLETE (PUERTO DE DESTINO CONVENIDO).">
+                                        <#elseif dataXML.Complemento.ComercioExterior.atributos.Incoterm == "CPT">
+                                            <#assign incotermDescripcion = "TRANSPORTE PAGADO HASTA (EL LUGAR DE DESTINO CONVENIDO).">
+                                        <#elseif dataXML.Complemento.ComercioExterior.atributos.Incoterm == "CIP">
+                                            <#assign incotermDescripcion = "TRANSPORTE Y SEGURO PAGADOS HASTA (LUGAR DE DESTINO CONVENIDO).">
+                                        <#elseif dataXML.Complemento.ComercioExterior.atributos.Incoterm == "DAF">
+                                            <#assign incotermDescripcion = "ENTREGADA EN FRONTERA (LUGAR CONVENIDO).">
+                                        <#elseif dataXML.Complemento.ComercioExterior.atributos.Incoterm == "DAP">
+                                            <#assign incotermDescripcion = "ENTREGADA EN LUGAR.">
+                                        <#elseif dataXML.Complemento.ComercioExterior.atributos.Incoterm == "DAT">
+                                            <#assign incotermDescripcion = "ENTREGADA EN TERMINAL.">
+                                        <#elseif dataXML.Complemento.ComercioExterior.atributos.Incoterm == "DES">
+                                            <#assign incotermDescripcion = "ENTREGADA SOBRE BUQUE (PUERTO DE DESTINO CONVENIDO).">
+                                        <#elseif dataXML.Complemento.ComercioExterior.atributos.Incoterm == "DEQ">
+                                            <#assign incotermDescripcion = "ENTREGADA EN MUELLE (PUERTO DE DESTINO CONVENIDO).">
+                                        <#elseif dataXML.Complemento.ComercioExterior.atributos.Incoterm == "DDU">
+                                            <#assign incotermDescripcion = "ENTREGADA DERECHOS NO PAGADOS (LUGAR DE DESTINO CONVENIDO).">
+                                        <#elseif dataXML.Complemento.ComercioExterior.atributos.Incoterm == "DDP">
+                                            <#assign incotermDescripcion = "ENTREGADA DERECHOS PAGADOS (LUGAR DE DESTINO CONVENIDO).">
+                                        <#elseif dataXML.Complemento.ComercioExterior.atributos.Incoterm == "DPU">
+                                            <#assign incotermDescripcion = "ENTREGADA Y DESCARGADA EN LUGAR ACORDADO.">
+                                        <#elseif dataXML.Complemento.ComercioExterior.atributos.Incoterm == "EXW">
+                                            <#assign incotermDescripcion = "EN FABRICA (LUGAR CONVENIDO).">
+                                        <#elseif dataXML.Complemento.ComercioExterior.atributos.Incoterm == "FCA">
+                                            <#assign incotermDescripcion = "FRANCO TRANSPORTISTA (LUGAR DESIGNADO).">
+                                        <#elseif dataXML.Complemento.ComercioExterior.atributos.Incoterm == "FAS">
+                                            <#assign incotermDescripcion = "FRANCO AL COSTADO DEL BUQUE (PUERTO DE CARGA CONVENIDO).">
+                                        <#elseif dataXML.Complemento.ComercioExterior.atributos.Incoterm == "FOB">
+                                            <#assign incotermDescripcion = "FRANCO A BORDO (PUERTO DE CARGA CONVENIDO).">
+                                        <#else>
+                                            <#assign incotermDescripcion = "record.custbody_efx_fe_ce_incoterm">
+                                    </#if>
+                                    <td style="align: center; vertical-align: center; width: 25%;" rowspan="8" colspan="2">
+                                        <#if dataXML.Receptor.atributos.ResidenciaFiscal?has_content>
+                                            <b>Residencia Fiscal Receptor:</b><br /><br />
+                                        </#if>
+                                        <#if incotermDescripcion?has_content>
+                                            <b>Clave Incoterm:</b><br /><br />
+                                        </#if>
+
+                                        <#if dataXML.Complemento.ComercioExterior.atributos.ClaveDePedimento?has_content>
+                                            <b>Clave de Pedimento:</b><br /><br />
+                                        </#if>
+                                        <#if record.custbody_efx_fe_ce_p_residenciafiscal?has_content>
+                                            <b>Residencia Fiscal Propietario:</b><br /><br />
+                                        </#if>
+                                        <#if dataXML.Complemento.ComercioExterior.atributos.CertificadoOrigen?has_content>
+                                            <b>Certificado Origen:</b><br /><br />
+                                        </#if>
+                                        <#if record.custbody_efx_fe_ce_certificado_origen?number == 0>
+                                        <#else>
+                                            <b>No. Certificado Origen:</b><br /><br />
+                                        </#if>
+                                        <b>Tipo de operación:</b><br /><br />
+                                        <#if dataXML.Complemento.ComercioExterior.atributos.Subdivision?has_content>
+                                            <b>Subdivision:</b><br /><br />
+                                        </#if>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="align: left; vertical-align: center; width: 25%;" rowspan="8" colspan="3">
+                                        <#if dataXML.Receptor.atributos.ResidenciaFiscal?has_content>
+                                            ${dataXML.Receptor.atributos.ResidenciaFiscal}<br /><br />
+                                        </#if>
+                                        <#if incotermDescripcion?has_content>
+                                            ${dataXML.Complemento.ComercioExterior.atributos.Incoterm} ${incotermDescripcion}<br /><br />
+                                        </#if>
+                                        <#if dataXML.Complemento.ComercioExterior.atributos.ClaveDePedimento?has_content>
+                                            ${dataXML.Complemento.ComercioExterior.atributos.ClaveDePedimento} Importación o Exportación Definitiva<br /><br />
+                                        </#if>
+                                        <#if record.custbody_efx_fe_ce_p_residenciafiscal?has_content>
+                                            ${record.custbody_efx_fe_ce_p_residenciafiscal}<br /><br />
+                                        </#if>
+                                        <#if dataXML.Complemento.ComercioExterior.atributos.CertificadoOrigen?has_content>
+                                            <#if dataXML.Complemento.ComercioExterior.atributos.CertificadoOrigen?number == 0>
+                                                ${dataXML.Complemento.ComercioExterior.atributos.CertificadoOrigen} No Funge como certificado de origen.<br /><br />
+                                            <#else>
+                                                ${dataXML.Complemento.ComercioExterior.atributos.CertificadoOrigen} Funge como certificado de origen.<br /><br />
+                                            </#if>
+                                        </#if>
+                                        <#if record.custbody_efx_fe_ce_certificado_origen?number == 0>
+                                        <#else>
+                                            ${record.custbody_efx_fe_ce_ncertificado_origen}<br /><br />
+                                        </#if>
+                                        2 Exportación<br /><br />
+                                        <#if dataXML.Complemento.ComercioExterior.atributos.Subdivision?has_content>
+                                            ${dataXML.Complemento.ComercioExterior.atributos.Subdivision} No Tiene SubDivisión<br /><br />
+                                        </#if>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </#if>
+                <#else>
+                    <#--  Si no hay Comercio Exterior no colocar la tabla y ajustar los campos  -->
+                    <#--  Tabla de articulos  -->
+                    <table style="width: 100%; border-left:0.5px single black; border-right:0.5px single black; border-bottom:0.5px single black;  border-top:0.5px single black;  word-break: break-all; border-collapse: collapse; margin-top:20px;">
+                        <#list record.item as item>
+                            <#assign desglose_json = item.custcol_efx_fe_tax_json>
+                            <#if desglose_json?has_content>
+                                <#assign desglose = desglose_json?eval>
+                            <#else>
+                                <#assign desglose = "No hay JSON de linea">
+                            </#if>
+                            <tr>
+                                <td style="align: center; border-bottom:0.5px single black;" colspan="20"><b>Concepto   ${item_index+1} </b></td>
+                            </tr>
+                            <tr style="height: 18pt;" >
+                                <td colspan="2" style="border-bottom:0.5px single black; vertical-align: middle; align: center;">
+                                    <strong>ClaveProd<br />Serv</strong>
+                                </td>
+                                <td colspan="3" style="border-bottom:0.5px single black; vertical-align: middle; align: left; ">
+                                    <strong>No. Parte</strong>
+                                </td>
+                                <td colspan="1" style="border-bottom:0.5px single black; vertical-align: middle; align: center;">
+                                    <strong>Cant</strong>
+                                </td>
+                                <td colspan="1" style=" border-bottom:0.5px single black; vertical-align: middle; align: left;">
+                                    <strong>Unid</strong>
+                                </td>
+                                <td colspan="1" style=" border-bottom:0.5px single black; vertical-align: middle; align: left;">
+                                    <strong><span style="font-size: 4pt;" >Clave</span><br /><span style="font-size: 4pt;" >Unidad</span></strong>
+                                </td>
+                                <td colspan="6" style=" border-bottom:0.5px single black; vertical-align: middle; align: left; font-size: 8px;">
+                                    <strong>Descripcion</strong>
+                                </td>
+                                <td colspan="2" style="border-bottom:0.5px single black; vertical-align: middle; align: left; font-size: 8px;">
+                                    <strong>Impuestos</strong>
+                                </td>
+                                <td colspan="2" style="border-bottom:0.5px single black; vertical-align: middle; align: right;">
+                                    <strong>Precio Unitario</strong>
+                                </td>
+                                <td colspan="2" style="border-bottom:0.5px single black; vertical-align: middle; align: center;">
+                                    <strong>Importe</strong>
+                                </td>
+                            </tr>
+                            <#if item.units == "ANT">
+                                <#assign units_sat = "ACT">
+                                <#else>
+                                <#assign units_sat = "">
+                            </#if>
+                            <#if item.units == "SRV">
+                                <#assign units_sat = "E48">
+                                <#else>
+                                <#assign units_sat = "">
+                            </#if>
+                            <#if item.units == "GR">
+                                <#assign units_sat = "GRM">
+                                <#else>
+                                <#assign units_sat = "">
+                            </#if>
+                            <#if item.units == "KG" || item.units == "Kg" || item.units == "kg" || item.units == "kilo" || item.units == "Kilo" >
+                                <#assign units_sat = "KGM">
+                                <#else>
+                                <#assign units_sat = "">
+                            </#if>
+                            <#if item.units == "ML">
+                                <#assign units_sat = "MLT">
+                                <#else>
+                                <#assign units_sat = "">
+                            </#if>
+                            <#if item.units == "L">
+                                <#assign units_sat = "LTR">
+                                <#else>
+                                <#assign units_sat = "">
+                            </#if>
+                            <#if item.units == "PZA" || item.units == "Pza">
+                                <#assign units_sat = "H87">
+                                <#else>
+                                <#assign units_sat = "">
+                            </#if>
+                            <tr>
+                            <td colspan="2" style="align: center;">${item.custcol_mx_txn_line_sat_item_code?keep_before(" ")}<br/><br/></td>
+                            <td colspan="3" style="align: left;">${item.item}<br/><br/></td>
+                            <#assign cantidad = item.quantity?number>
+                            <#assign decimales = cantidad?keep_after(".")?number>
+                            <#if (cantidad gt 0 && cantidad lt 999) && (decimales gt 0)>
+                                <td colspan="3" style="align: center; font-size: 6pt;">${cantidad}<br/><br/></td>
+                            <#elseif cantidad gt 999 && decimales gt 0>
+                                <td colspan="3" style="align: center; font-size: 6pt;">${cantidad}<br/><br/></td>
+                            <#else>
+                                <td colspan="3" style="align: center; font-size: 7pt;">${cantidad?string[",##0"]}<br/><br/></td>
+                            </#if>
+                            <td colspan="1" style="align: left; ">${item.units}<br/><br/></td>
+                            <td colspan="1" style="align: left; ">${units_sat}<br/><br/></td>
+                            <td colspan="6" style="align: left;">${item.description}<br/><br/></td>
+
+                            <#if desglose.iva.name?has_content>
+                                <td colspan="2" style="align: left;">${desglose.iva.factor} IVA <br/> <span style=" font-size: 7pt">${desglose.iva.importe}</span></td>
+                            </#if>
+
+                            <td colspan="2" style="align: right; ">${item.rate?string[",##0.00"]}<br/><br/></td>
+                            <td colspan="2" style="align: center; ">${item.grossamt}<br/><br/></td>
+                            </tr>
+                            <#if item.inventorydetail?has_content>
+                            <tr>
+                                <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4"><strong>Número Serial</strong></td>
+                                <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4"><strong>Número de Motor</strong></td>
+                                <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4"><strong>Pedimento</strong></td>
+                                <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4"><strong>Fecha Entrada</strong></td>
+                                <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;" colspan="4"><strong>Repuve</strong></td>
+                            </tr>
+                            <#assign "detalle_inventario_json" = item.custcol_efx_invdet_json + item.custcol_efx_invdet_json2 + item.custcol_efx_invdet_json3 + item.custcol_efx_invdet_json4 + item.custcol_efx_invdet_json5>
+                            <#assign "detalle_inventario" = detalle_inventario_json?eval>
+                            <#list detalle_inventario as detalle_inv>
+                                <tr>
+                                <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4">${detalle_inv.inventorynumber}	         </td>
+                                <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4">${detalle_inv.num_motor}</td>
+                                <#if detalle_inv.inventorynumber?starts_with("3MU")>
+                                    <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4">ENSAMBLE EN MEXICO</td>
+                                <#else>
+                                    <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4">${detalle_inv.num_pedimento}</td>
+                                </#if>
+                                <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4">${detalle_inv.fecha_entrada_pedimento}</td>
+                                <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;" colspan="4">${detalle_inv.repuve}</td>
+                                </tr>
+                            </#list>
+                            </#if>
+                        </#list>
+                        <tr>
+                            <td colspan="20"><strong>Notas:</strong><br/>${record.memo}</td>
+                        </tr>
+                    </table>
+                </#if>
+
+                <#--  Tabla de informacion de totales e informcacion del CFDI  -->
+                <table style="width: 100%;   border-spacing: 0; table-layout: fixed; word-break:break-all; margin-top:20px;" border="0.5px" cellspacing="0" cellpadding="0" >
+                    <tbody>
+                        <tr>
+                            <td style="width: 60%;" rowspan="8">
+                                <table style="width: 100%; table-layout: fixed; word-break:break-all; border-collapse:collapse; margin-top:10px; margin-left:10px; margin-bottom:10px;" cellspacing="0" cellpadding="0">
+                                    <tbody>
+                                        <tr>
+                                            <td style="width: 60pt; align: left;" colspan="8">Tipo de comprobante</td>
+                                            <td style="width: 2pt;">:</td>
+                                            <td style="width: 200pt; ">INGRESO  </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 60pt; align: left;" colspan="8">M&eacute;todo de Pago</td>
+                                            <td style="width: 2pt;">:</td>
+                                            <td style="width: 200pt; ">${record.custbody_mx_txn_sat_payment_term?upper_case}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 60pt; align: left;" colspan="8">Forma de Pago</td>
+                                            <td style="width: 2pt;">:</td>
+                                            <td style="width: 200pt;">${record.custbody_mx_txn_sat_payment_method?upper_case}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 60pt; align: left;" colspan="8">Condiciones de Pago</td>
+                                            <td style="width: 2pt;">:</td>
+                                            <td style="width: 200pt;">${record.terms}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 60pt; align: left;" colspan="8">Moneda</td>
+                                            <td style="width: 2pt;">:</td>
+                                            <td style="width: 200pt;">${record.currency}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 60pt; align: left;" colspan="8">Tipo de Cambio</td>
+                                            <td style="width: 2pt;">:</td>
+                                            <td style="width: 200pt;">${record.exchangerate}<br /><br /><br /></td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 100%; " colspan="10">${record.custbody_efx_fe_total_text} </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                            <td style="vertical-align: top;">
+                                <br />
+                                <table style="align: right; width: 100%; height: 70pt; border-spacing: 0; table-layout: fixed; word-break:break-all; margin-right:10px; margin-bottom:10px;" cellspacing="0" cellpadding="0">
+                                    <tbody>
+                                        <tr>
+                                            <td style="align: right; width: 180px;">
+                                                <strong>SUBTOTAL: &nbsp; &nbsp;</strong>
+                                            </td>
+                                            <td style="align: right; width: 90px;border-bottom:1.5px single silver;">${dataXML.atributos.SubTotal?number?string[",##0.0"]}</td>
+                                        </tr>
+
+                                        <#--  Descuento sin impuesto  -->
+                                        <#if dataXML.atributos.Descuento?number != 0>
+                                            <tr>
+                                                <td style="align: right; width: 180px;">
+                                                    <strong>DESCUENTO: &nbsp; &nbsp;</strong>
+                                                </td>
+                                                <td style="align: right; width: 90px;border-bottom:1.5px single silver;"> -$${dataXML.atributos.Descuento?number?string[",##0.0"]}</td>
+                                            </tr>
+                                        </#if>
+
+                                        <#if record.shippingcost?keep_after("$") == "">
+                                        <#else>
+                                            <tr>
+                                            <td style="align: right; width: 180px;">
+                                                <strong>ENVÍO: &nbsp; &nbsp;</strong>
+                                            </td>
+                                            <td style="align: right; width: 90px; border-bottom:1.5px single silver;">${record.shippingcost}</td>
+                                            </tr>
+                                        </#if>
+
+                                        <tr>
+                                            <td style="align: right; width: 180px;">
+                                            <strong>IVA 16%: &nbsp; &nbsp;</strong>
+                                            </td>
+                                            <td style="align: right; width: 90px; border-bottom:1.5px single silver;">${record.taxtotal}   </td>
+                                        </tr>
+
+                                        <#if (tax.retencion_total?number > 0)>
+                                            <tr>
+                                                <td style="align: right; width: 180px;">
+                                                    <strong>RETENCIÓN: &nbsp; &nbsp;</strong>
+                                                </td>
+                                                <td style="align: right; width: 90px; single silver;"> -$${tax.retencion_total}</td>
+                                            </tr>
+                                        </#if>
+
+                                        <tr>
+                                            <td style="align: right; width: 180px;">
+                                            <strong>TOTAL: &nbsp; &nbsp;</strong>
+                                            </td>
+                                            <td style="align: right; width: 90px;">${record.total}</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <#--  Tabla de informacion de timbrado  -->
+                <#assign qrcodeImage = "data:image/png;base64, " + certData.custbody_mx_cfdi_qr_code >
+                <table style="width: 100%; table-layout: fixed; word-break:break-all; margin-top:10px; font-size: 6px;">
+                    <tbody>
+                        <tr style="height: 102pt; margin-top:2pt; margin-bottom:2pt; margin-left:2pt; margin-right:2pt;">
+                            <td style="width: 91pt; height: 122px; vertical-align: top;"><img style="width: 80px;height:80px" src="${qrcodeImage}" /></td>
+                            <td style="width: 469pt; height: 122px; border-top:0.5px single black; border-bottom:0.5px single black; border-left:0.5px single black; border-right:0.5px single black;">
+                            <div style="align: left; margin:0px;">
+                                <strong>CADENA ORIGINAL</strong>
+                                <br />${certData.custbody_mx_cfdi_cadena_original}
+                            </div>
+                            <div style="align: left; margin:0px;">
+                                <strong>SELLO DIGITAL DEL CFDI</strong>
+                                <br />${certData.custbody_mx_cfdi_signature}
+                            </div>
+                            <div style="align: left; margin:0px;">
+                                <strong>SELLO DEL SAT</strong>
+                                <br />${certData.custbody_mx_cfdi_sat_signature}
+                            </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </#if>
+        <#else>
+            <#--  Tabla de informacion cabecera  -->
+            <table style="width: 100%; border-spacing: 0; table-layout: fixed; word-break:break-all;" cellspacing="0" cellpadding="0" >
+                <tbody>
+                    <tr>
+                        <td style="width: 25%;" rowspan="6">&nbsp;</td>
+                        <td style="width: 25%; align: left; vertical-align: top; font-weight:bold;" rowspan="6" font-size="8.5px">
+                        <span>  ${record.subsidiary}</span><br />
+                        <#assign direccion = record.custbody_efx_fe_dirsubs?keep_after("<br />")>
+                        <span>  ${direccion?keep_before_last("<br />")}  </span><br />
+                        <span>RFC: ${record.custbody_bit_fact_e_rfc_emisor}</span><br />
+                        <#--  <span>Régimen Fiscal: ${record.custbody_bit_fact_e_regimenfiscal?keep_before(" ")}</span><br />  -->
+                        <span>Régimen Fiscal: ${record.subsidiary.custrecord_mx_sat_industry_type?keep_before(" ")}</span><br />
+                        </td>
+
+                        <td colspan="4" style="font-size: 10px; width: 40%;" align="right">
+                        <table style="font-weight:bold; height:70.8pt; table-layout: fixed; word-break:break-all;" border="1" font-size="8.5px" >
+                            <tbody>
+                            <tr>
+                                <td style="width: 82pt; align: right;">FACTURA</td>
+                                <td style="width: 2pt;">:</td>
+                                <td style="width: 85pt;">${record.tranid} </td>
+                            </tr>
+                            <tr>
+                                <td style="width: 78pt; align: right;">Folio Fiscal</td>
+                                <td style="width: 2pt;">:</td>
+                                <#if certData?has_content>
+                                <td style="width: 85pt;">${certData.custbody_mx_cfdi_uuid}</td>
+
+                                <#else>
+                                <td style="width: 85pt;">${record.custbody_mx_cfdi_uuid}</td>
+                                </#if>
+                            </tr>
+                            <tr>
+                                <td style="width: 82pt; align: right;">No. Certificado SAT</td>
+                                <td style="width: 2pt;">:</td>
+                                <td style="width: 85pt;">&nbsp;${record.custbody_mx_cfdi_sat_serial}</td>
+                            </tr>
+                            <tr>
+                                <td style="width: 82pt; align: right;">No. Certificado</td>
+                                <td style="width: 2pt;">:</td>
+                                <td style="width: 85pt;">&nbsp;${record.custbody_mx_cfdi_issuer_serial}</td>
+                            </tr>
+                            <tr>
+                                <td style="width: 90pt; align: right;">Fecha de Expedición</td>
+                                <td style="width: 2pt;">:</td>
+                                <td style="width: 85pt;">&nbsp;${record.trandate?string.iso_nz}T00:00:00  </td>
+                            </tr>
+                            <tr>
+                                <td style="width: 100pt; align: right;">Fecha de Certificación</td>
+                                <td style="width: 2pt;">:</td>
+                                <td style="width: 85pt;">&nbsp;${record.custbody_mx_cfdi_certify_timestamp}  </td>
+                            </tr>
+                            <tr>
+                                <td style="width: 87pt; align: right;">Expedida en</td>
+                                <td style="width: 2pt;">:</td>
+                                <td style="width: 85pt;">${subsidiary.mainaddress.zip} - ${subsidiary.mainaddress.city}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <#--  Datos de Orden de cliente, Pedido interno, etc.  -->
+            <table style="width: 100%;">
+                <tbody>
+                <tr style="width: 100%;">
+                    <td style="width: 20%;">&nbsp; Orden del Cliente: &nbsp;  ${record.otherrefnum}  </td>
+                    <td style="width: 40%;">&nbsp; Pedido Interno: &nbsp;     ${record.shipcity}  </td>
+                    <td style="width: 40%;">&nbsp;</td>
+                </tr>
+                <tr style="width: 100%;">
+                    <td  style="width: 20%;">&nbsp; ${record.createdfrom?keep_before("#")}: &nbsp;  ${record.createdfrom?keep_after("#")}  </td>
+                    <td  style="width: 40%;">&nbsp; Representante de ventas: &nbsp;     ${record.salesrep}  </td>
+                    <td  style="width: 40%;">&nbsp; Almacen: &nbsp;     ${record.location}  </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <#--  Datos de ubicaciones Vendido a, Embarcado a  -->
+            <table style="width: 100%; border-left:0.5px single black; border-right:0.5px single black; border-top:0.5px single black; border-bottom:0.5px single black;">
+                <tbody>
+                    <tr>
+                        <td style="align: center; border-bottom:0.5px single black; border-right:0.5px single black; width: 50%;" colspan="4">
+                        <strong>&nbsp;VENDIDO A/SOLD TO</strong>
+                        </td>
+                        <td style="align: center; border-bottom:0.5px single black; width: 50%;" >
+                        <strong>&nbsp;EMBARCADO A/SHIP TO</strong>
+                        </td>
+                    </tr>
+                    <#if record.entity.companyname?has_content>
+                        <#assign customerName = record.entity.companyname>
+                        <#else>
+                        <#assign customerName = record.entity.firstname + ' ' + record.entity.lastname>
+                    </#if>
+                    <tr>
+                        <td style="align: right;  width: 15%;"><b>Nombre</b>:</td>
+                        <td style="border-right:0.5px single black; width: 35%;" colspan="3">${customerName}  </td>
+                        <td style="vertical-align: top; width: 50%;" rowspan="3"> ${record.shipaddress}  </td>
+                    </tr>
+                    <tr>
+                        <td style="align: right; width: 15%;"><b>Bill Address</b>:</td>
+                        <td style="border-right:0.5px single black;  width: 35%;" colspan="3">${record.billaddress}  </td>
+                    </tr>
+                    <tr>
+                        <td style="align: right;  width: 15%;"><b>RFC</b>:</td>
+                        <td style="border-right:0.5px single black; width: 35%;" colspan="3">${record.custbody_mx_customer_rfc}  </td>
+                    </tr>
+                    <tr>
+                        <td style="align: right;  width: 15%;"><b>Uso CFDI</b>:</td>
+                        <td style="border-right:0.5px single black; width: 35%;" colspan="3">${record.custbody_mx_cfdi_usage}  </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <#if record.item?has_content>
+                <#assign "total_cajas" = 0><#assign "total_piezas" = 0>
+                <#assign "obj_cajas"= {}>
+                <#assign "line_discount"= 0>
+                <#assign "importe_discount" = []>
+                <#list record.item as item>
+                    <#assign "tipo_articulo" = item.item?keep_before(" ")>
+                    <#if tipo_articulo == "Descuento">
+                    <#assign "importe_discount" = importe_discount+ [item.grossamt]>
+                    <#else>
+                        <#assign "importe_discount" = importe_discount+ [0]>
+                    </#if>
+                </#list>
+                <#assign "importe_discount" = importe_discount+ [0]>
+                <#assign "descuento_total" = 0>
+
+                <#--  Si hay Comercio Exterior colocar la tabla completa-->
+                <#if record.custbody_efx_fe_comercio_exterior==true>
+                    <#--  Tabla de articulos  -->
+                    <table style="width: 100%; border-left:0.5px single black; border-right:0.5px single black; border-bottom:0.5px single black;  border-top:0.5px single black;  table-layout: fixed; word-break: break-all; border-collapse: collapse; margin-top:20px;">
+                        <#list record.item as item>
+                            <#assign desglose_json = item.custcol_efx_fe_tax_json>
+                            <#if desglose_json?has_content>
+                                <#assign desglose = desglose_json?eval>
+                            <#else>
+                                <#assign desglose = "No hay JSON de linea">
+                            </#if>
+                            <tr>
+                                <td colspan="39" style="align: center; border-bottom:0.5px single black;" ><b>Concepto   ${item_index+1} </b></td>
+                            </tr>
+                            <tr style="height: 18pt;" >
+                                <td colspan="4" style="border-bottom:0.5px single black; vertical-align: middle; align: center;">
+                                    <strong>ClaveProd <br/>Serv</strong>
+                                </td>
+                                <td colspan="4" style="border-bottom:0.5px single black; vertical-align: middle; align: center; font-size: 8px;">
+                                    <strong>Fraccion<br/> Arancelaria</strong>
+                                </td>
+                                <td colspan="3" style="border-bottom:0.5px single black; vertical-align: middle; align: left; ">
+                                    <strong>No. Parte</strong>
+                                </td>
+                                <td colspan="3" style="border-bottom:0.5px single black; vertical-align: middle; align: center; font-size:8px">
+                                    <strong>Cant.</strong>
+                                </td>
+                                <td colspan="2" style="border-bottom:0.5px single black; vertical-align: middle; align: left; font-size:7px">
+                                    <strong>Unid.</strong>
+                                </td>
+                                <td colspan="3" style="border-bottom:0.5px single black; vertical-align: middle; align: left;">
+                                    <strong>Clave Unidad</strong>
+                                </td>
+                                <td colspan="4" style="border-bottom:0.5px single black; vertical-align: middle; align: left;">
+                                    <strong>Unidad Aduana</strong>
+                                </td>
+                                <td colspan="6" style="border-bottom:0.5px single black; vertical-align: middle; align: left; font-size: 8px;" >
+                                    <strong>Descripcion</strong>
+                                </td>
+                                <td colspan="4" style="border-bottom:0.5px single black; vertical-align: middle; align: left; font-size: 8px;">
+                                    <strong>Impuestos</strong>
+                                </td>
+                                <td colspan="3" style="border-bottom:0.5px single black; vertical-align: middle; align: right;">
+                                    <strong>Precio Unitario</strong>
+                                </td>
+                                <td colspan="4" style="border-bottom:0.5px single black; vertical-align: middle; align: center;">
+                                    <strong>Importe</strong>
+                                </td>
+                            </tr>
+                            <#if item.units == "ANT">
+                                <#assign units_sat = "ACT">
+                                <#else>
+                                <#assign units_sat = item.units>
+                            </#if>
+                            <#if item.units == "SRV">
+                                <#assign units_sat = "E48">
+                                <#else>
+                                <#assign units_sat = item.units>
+                            </#if>
+                            <#if item.units == "GR">
+                                <#assign units_sat = "GRM">
+                                <#else>
+                                <#assign units_sat = item.units>
+                            </#if>
+                            <#if item.units == "KG" || item.units == "Kg" || item.units == "kg" || item.units == "kilo" || item.units == "Kilo">
+                                <#assign units_sat = "58">
+                                <#else>
+                                <#assign units_sat = "">
+                            </#if>
+                            <#if item.units == "ML">
+                                <#assign units_sat = "MLT">
+                                <#else>
+                                <#assign units_sat = item.units>
+                            </#if>
+                            <#if item.units == "L">
+                                <#assign units_sat = "LTR">
+                                <#else>
+                                <#assign units_sat = item.units>
+                            </#if>
+                            <#if item.units == "PZA" || item.units == "Pza">
+                                <#assign units_sat = "H87">
+                                <#else>
+                                <#assign units_sat = item.units>
+                            </#if>
+                            <tr>
+                                <td colspan="4" style="align: center; ">${item.custcol_mx_txn_line_sat_item_code?keep_before(" ")}<br/><br/></td>
+                                <td colspan="4" style="align: center; font-size:8px">${item.custcol_efx_fe_ce_farancel_code}<br/><br/></td>
+                                <td colspan="3" style="align: left; ">${item.item}<br/><br/></td>
+                                <#assign cantidad = item.quantity>
+                                <#assign decimales = cantidad?keep_after(".")?number>
+                                <#if (cantidad gt 0 && cantidad lt 999) && (decimales gt 0)>
+                                    <td colspan="3" style="align: center; font-size: 6pt;">${cantidad}<br/><br/></td>
+                                <#elseif cantidad gt 999 && decimales gt 0>
+                                    <td colspan="3" style="align: center; font-size: 6pt;">${cantidad}<br/><br/></td>
+                                <#else>
+                                    <td colspan="3" style="align: center; font-size: 7pt;">${cantidad?string[",##0"]}<br/><br/></td>
+                                </#if>
+                                <td colspan="2" style="align: left; ">${item.units}<br/><br/></td>
+                                <#if item.units == "KG" || item.units == "Kg" || item.units == "kg">
+                                    <td colspan="3" style="align: left; ">58<br/><br/></td>
+                                <#else>
+                                    <td colspan="3" style="align: left; ">${units_sat}<br/><br/></td>
+                                </#if>
+                                    <#--  <td colspan="3" style="align: left; ">${units_sat}<br/><br/></td>  -->
+                                <#--  <td colspan="3" style="align: left; ">${units_sat}<br/><br/></td>  -->
+                                <td colspan="4" style="align: left; ">${item.custcol_efx_fe_ce_uni_aduana}<br/><br/></td>
+                                <td colspan="6" style="align: left; " >${item.description}<br/><br/></td>
+
+                                <#if desglose.iva.name?has_content>
+                                    <td colspan="4" style="align: left;">${desglose.iva.factor} IVA <br/> <span style=" font-size: 7pt">${desglose.iva.importe}</span></td>
+                                </#if>
+
+                                <td colspan="3" style="align: right;">${item.rate?string[",##0.00"]}<br/><br/></td>
+                                <td colspan="4" style="align: center;">${item.grossamt}<br/><br/></td>
+                            </tr>
+                            <#if item.inventorydetail?has_content>
+                                <tr>
+                                    <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4"><strong>Número Serial</strong></td>
+                                    <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4"><strong>Número de Motor</strong></td>
+                                    <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4"><strong>Pedimento</strong></td>
+                                    <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4"><strong>Fecha Entrada</strong></td>
+                                    <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;" colspan="4"><strong>Repuve</strong></td>
+                                </tr>
+                                <#assign "detalle_inventario_json" = item.custcol_efx_invdet_json + item.custcol_efx_invdet_json2 + item.custcol_efx_invdet_json3 + item.custcol_efx_invdet_json4 + item.custcol_efx_invdet_json5>
+                                <#assign "detalle_inventario" = detalle_inventario_json?eval>
+                                <#list detalle_inventario as detalle_inv>
+                                    <tr>
+                                        <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4">${detalle_inv.inventorynumber}	         </td>
+                                        <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4">${detalle_inv.num_motor}</td>
+                                        <#if detalle_inv.inventorynumber?starts_with("3MU")>
+                                            <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4">ENSAMBLE EN MEXICO</td>
+                                        <#else>
+                                            <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4">${detalle_inv.num_pedimento}</td>
+                                        </#if>
+                                        <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4">${detalle_inv.fecha_entrada_pedimento}</td>
+                                        <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;" colspan="4">${detalle_inv.repuve}</td>
+                                    </tr>
+                                </#list>
+                            </#if>
+                        </#list>
+                        <tr>
+                            <td colspan="39"><strong>Notas:</strong><br/>${record.memo}</td>
+                        </tr>
+                    </table>
+                    <#--  Tabla de comercio exterior  -->
+                    <table style="width: 100%; margin-top:20px; border-left:0.5px single black; border-right:0.5px single black; border-top:0.5px single black; border-bottom:0.5px single black;">
+                        <tbody>
+                            <tr>
+                            <td style="align: left; border-bottom:0.5px single black; width: 50%;" colspan="10">
+                                <strong>&nbsp;Comercio Exterior</strong>
+                            </td>
+                            </tr>
+
+                            <tr>
+                            <td style="align: center; vertical-align: center; width: 25%;" rowspan="8" colspan="2">
+
+                                <#if record.custbody_efx_fe_ce_recep_num_reg?has_content>
+                                <b>No. Registro Receptor:</b><br /><br />
+                                </#if>
+                                <#if record.custbody_efx_fe_ce_exchage?has_content>
+                                <b>Tipo de Cambio:</b><br /><br />
+                                </#if>
+                                <#if record.custbody_efx_fe_ce_totalusd?has_content>
+                                <b>Total en Dolares:</b><br /><br />
+                                </#if>
+                                <#if record.custbody_efx_fe_ce_propietario_numreg?has_content>
+                                <b>No. Registro Propietario:</b><br /><br />
+                                </#if>
+                                <#if record.custbody_efx_fe_ce_motivo_traslado?has_content>
+                                <b>Motivo de Traslado:</b><br /><br />
+                                </#if>
+                            </td>
+                            </tr>
+
+                            <tr>
+                            <td style="align: left; vertical-align: center; width: 25%;" rowspan="8" colspan="3">
+                                <#if record.custbody_efx_fe_ce_recep_num_reg?has_content>
+                                ${record.custbody_efx_fe_ce_recep_num_reg}<br /><br />
+                                </#if>
+                                <#if record.custbody_efx_fe_ce_exchage?has_content>
+                                ${record.custbody_efx_fe_ce_exchage}<br /><br />
+                                </#if>
+                                <#if record.custbody_efx_fe_ce_totalusd?has_content>
+                                ${record.custbody_efx_fe_ce_totalusd}<br /><br />
+                                </#if>
+                                <#if record.custbody_efx_fe_ce_propietario_numreg?has_content>
+                                ${record.custbody_efx_fe_ce_propietario_numreg}<br /><br />
+                                </#if>
+                                <#if record.custbody_efx_fe_ce_motivo_traslado?has_content>
+                                ${record.custbody_efx_fe_ce_motivo_traslado}<br /><br />
+                                </#if>
+                                <#--  <#list record.item as item>
+                                <#if item?has_next>
+                                    ${item.custcol_bit_fact_e_unidad}<br /><br />
+                                    ${item.custcol_efx_fe_ce_uni_aduana}<br /><br />
+                                    ${item.custcol_efx_fe_ce_farancel_code}<br /><br /><br /><br />
+                                <#else>
+                                    ${item.custcol_bit_fact_e_unidad}<br /><br />
+                                    ${item.custcol_efx_fe_ce_uni_aduana}<br /><br />
+                                    ${item.custcol_efx_fe_ce_farancel_code}<br /><br />
+                                </#if>
+
+                                </#list>  -->
+                            </td>
+                            </tr>
+                            <tr>
+                            <td style="align: center; vertical-align: center; width: 25%;" rowspan="8" colspan="2">
+                                <#if record.custbody_efx_fe_ce_rec_residenciaf?has_content>
+                                <b>Residencia Fiscal Receptor:</b><br /><br />
+                                </#if>
+                                <#if record.custbody_efx_fe_ce_incoterm?has_content>
+                                <b>Clave Incoterm:</b><br /><br />
+                                </#if>
+
+                                <#if record.custbody_efx_fe_ce_clavepedimento?has_content>
+                                <b>Clave de Pedimento:</b><br /><br />
+                                </#if>
+                                <#if record.custbody_efx_fe_ce_p_residenciafiscal?has_content>
+                                <b>Residencia Fiscal Propietario:</b><br /><br />
+                                </#if>
+                                <#if record.custbody_efx_fe_ce_certificado_origen?has_content>
+                                <b>Certificado Origen:</b><br /><br />
+                                </#if>
+                                <#if record.custbody_efx_fe_ce_certificado_origen?number == 0>
+                                <#else>
+                                <b>No. Certificado Origen:</b><br /><br />
+                                </#if>
+                                <b>Tipo de operación:</b><br /><br />
+                                <#if record.custbody_efx_fe_ce_subdivision?has_content>
+                                <b>Subdivision:</b><br /><br />
+                                </#if>
+                            </td>
+                            </tr>
+
+                            <tr>
+                            <td style="align: left; vertical-align: center; width: 25%;" rowspan="8" colspan="3">
+                                <#if record.custbody_efx_fe_ce_rec_residenciaf?has_content>
+                                ${record.custbody_efx_fe_ce_rec_residenciaf}<br /><br />
+                                </#if>
+                                <#if record.custbody_efx_fe_ce_incoterm?has_content>
+                                ${record.custbody_efx_fe_ce_incoterm}<br /><br />
+                                </#if>
+                                <#if record.custbody_efx_fe_ce_clavepedimento?has_content>
+                                ${record.custbody_efx_fe_ce_clavepedimento} Importación o Exportación Definitiva<br /><br />
+                                </#if>
+                                <#if record.custbody_efx_fe_ce_p_residenciafiscal?has_content>
+                                ${record.custbody_efx_fe_ce_p_residenciafiscal}<br /><br />
+                                </#if>
+                                <#if record.custbody_efx_fe_ce_certificado_origen?has_content>
+                                <#if record.custbody_efx_fe_ce_certificado_origen?number == 0>
+                                    ${record.custbody_efx_fe_ce_certificado_origen} No Funge como certificado de origen.<br /><br />
+                                <#else>
+                                    ${record.custbody_efx_fe_ce_certificado_origen} Funge como certificado de origen.<br /><br />
+                                </#if>
+                                </#if>
+                                <#if record.custbody_efx_fe_ce_certificado_origen?number == 0>
+                                <#else>
+                                ${record.custbody_efx_fe_ce_ncertificado_origen}<br /><br />
+                                </#if>
+                                2 Exportación<br /><br />
+                                <#if record.custbody_efx_fe_ce_subdivision?has_content>
+                                ${record.custbody_efx_fe_ce_subdivision} No Tiene SubDivisión<br /><br />
+                                </#if>
+                            </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                <#else>
+                    <#--  Si no hay Comercio Exterior no colocar la tabla y ajustar los campos  -->
+                    <#--  Tabla de articulos  -->
+                    <table style="width: 100%; border-left:0.5px single black; border-right:0.5px single black; border-bottom:0.5px single black;  border-top:0.5px single black;  word-break: break-all; border-collapse: collapse; margin-top:20px;">
+                        <#list record.item as item>
+                            <#assign desglose_json = item.custcol_efx_fe_tax_json>
+                            <#if desglose_json?has_content>
+                            <#assign desglose = desglose_json?eval>
+                            <#else>
+                            <#assign desglose = "No hay JSON de linea">
+                            </#if>
+                            <tr>
+                            <td style="align: center; border-bottom:0.5px single black;" colspan="20"><b>Concepto   ${item_index+1} </b></td>
+                            </tr>
+                            <tr style="height: 18pt;" >
+                            <td colspan="2" style="border-bottom:0.5px single black; vertical-align: middle; align: center;">
+                                <strong>ClaveProd<br />Serv</strong>
+                            </td>
+                            <td colspan="3" style="border-bottom:0.5px single black; vertical-align: middle; align: left; ">
+                                <strong>No. Parte</strong>
+                            </td>
+                            <td colspan="1" style="border-bottom:0.5px single black; vertical-align: middle; align: center;">
+                                <strong>Cant</strong>
+                            </td>
+                            <td colspan="1" style=" border-bottom:0.5px single black; vertical-align: middle; align: left;">
+                                <strong>Unid</strong>
+                            </td>
+                            <td colspan="1" style=" border-bottom:0.5px single black; vertical-align: middle; align: left;">
+                                <strong><span style="font-size: 4pt;" >Clave</span><br /><span style="font-size: 4pt;" >Unidad</span></strong>
+                            </td>
+                            <td colspan="6" style=" border-bottom:0.5px single black; vertical-align: middle; align: left; font-size: 8px;">
+                                <strong>Descripcion</strong>
+                            </td>
+                            <td colspan="2" style="border-bottom:0.5px single black; vertical-align: middle; align: left; font-size: 8px;">
+                                <strong>Impuestos</strong>
+                            </td>
+                            <td colspan="2" style="border-bottom:0.5px single black; vertical-align: middle; align: right;">
+                                <strong>Precio Unitario</strong>
+                            </td>
+                            <td colspan="2" style="border-bottom:0.5px single black; vertical-align: middle; align: center;">
+                                <strong>Importe</strong>
+                            </td>
+                            </tr>
+                            <#if item.units == "ANT">
+                                <#assign units_sat = "ACT">
+                                <#else>
+                                <#assign units_sat = "">
+                            </#if>
+                            <#if item.units == "SRV">
+                                <#assign units_sat = "E48">
+                                <#else>
+                                <#assign units_sat = "">
+                            </#if>
+                            <#if item.units == "GR">
+                                <#assign units_sat = "GRM">
+                                <#else>
+                                <#assign units_sat = "">
+                            </#if>
+                            <#if item.units == "KG" || item.units == "Kg" || item.units == "kg" || item.units == "kilo" || item.units == "Kilo" >
+                                <#assign units_sat = "KGM">
+                                <#else>
+                                <#assign units_sat = "">
+                            </#if>
+                            <#if item.units == "ML">
+                                <#assign units_sat = "MLT">
+                                <#else>
+                                <#assign units_sat = "">
+                            </#if>
+                            <#if item.units == "L">
+                                <#assign units_sat = "LTR">
+                                <#else>
+                                <#assign units_sat = "">
+                            </#if>
+                            <#if item.units == "PZA" || item.units == "Pza">
+                                <#assign units_sat = "H87">
+                                <#else>
+                                <#assign units_sat = "">
+                            </#if>
+                            <tr>
+                            <td colspan="2" style="align: center;">${item.custcol_mx_txn_line_sat_item_code?keep_before(" ")}<br/><br/></td>
+                            <td colspan="3" style="align: left;">${item.item}<br/><br/></td>
+                            <#assign cantidad = item.quantity>
+                            <#assign decimales = cantidad?keep_after(".")?number>
+                            <#if (cantidad gt 0 && cantidad lt 999) && (decimales gt 0)>
+                                <td colspan="3" style="align: center; font-size: 6pt;">${cantidad}<br/><br/></td>
+                            <#elseif cantidad gt 999 && decimales gt 0>
+                                <td colspan="3" style="align: center; font-size: 6pt;">${cantidad}<br/><br/></td>
+                            <#else>
+                                <td colspan="3" style="align: center; font-size: 7pt;">${cantidad?string[",##0"]}<br/><br/></td>
+                            </#if>
+                            <td colspan="1" style="align: left; ">${item.units}<br/><br/></td>
+                            <td colspan="1" style="align: left; ">${units_sat}<br/><br/></td>
+                            <td colspan="6" style="align: left;">${item.description}<br/><br/></td>
+
+                            <#if desglose.iva.name?has_content>
+                                <td colspan="2" style="align: left;">${desglose.iva.factor} IVA <br/> <span style=" font-size: 7pt">${desglose.iva.importe}</span></td>
+                            </#if>
+
+                            <td colspan="2" style="align: right; ">${item.rate?string[",##0.00"]}<br/><br/></td>
+                            <td colspan="2" style="align: center; ">${item.grossamt}<br/><br/></td>
+                            </tr>
+                            <#if item.inventorydetail?has_content>
+                            <tr>
+                                <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4"><strong>Número Serial</strong></td>
+                                <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4"><strong>Número de Motor</strong></td>
+                                <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4"><strong>Pedimento</strong></td>
+                                <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4"><strong>Fecha Entrada</strong></td>
+                                <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;" colspan="4"><strong>Repuve</strong></td>
+                            </tr>
+                            <#assign "detalle_inventario_json" = item.custcol_efx_invdet_json + item.custcol_efx_invdet_json2 + item.custcol_efx_invdet_json3 + item.custcol_efx_invdet_json4 + item.custcol_efx_invdet_json5>
+                            <#assign "detalle_inventario" = detalle_inventario_json?eval>
+                            <#list detalle_inventario as detalle_inv>
+                                <tr>
+                                <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4">${detalle_inv.inventorynumber}	         </td>
+                                <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4">${detalle_inv.num_motor}</td>
+                                <#if detalle_inv.inventorynumber?starts_with("3MU")>
+                                    <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4">ENSAMBLE EN MEXICO</td>
+                                <#else>
+                                    <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4">${detalle_inv.num_pedimento}</td>
+                                </#if>
+                                <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4">${detalle_inv.fecha_entrada_pedimento}</td>
+                                <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;" colspan="4">${detalle_inv.repuve}</td>
+                                </tr>
+                            </#list>
+                            </#if>
+                        </#list>
+                        <tr>
+                        <td colspan="20"><strong>Notas:</strong><br/>${record.memo}</td>
+                        </tr>
+                    </table>
+                </#if>
+
+                <#--  Tabla de informacion de totales e informcacion del CFDI  -->
+                <table style="width: 100%;   border-spacing: 0; table-layout: fixed; word-break:break-all; margin-top:20px;" border="0.5px" cellspacing="0" cellpadding="0" >
+                    <tbody>
+                    <tr>
+                        <td style="width: 60%;" rowspan="8">
+                        <table style="width: 100%; table-layout: fixed; word-break:break-all; border-collapse:collapse; margin-top:10px; margin-left:10px; margin-bottom:10px;" cellspacing="0" cellpadding="0">
+                            <tbody>
+                            <tr>
+                                <td style="width: 60pt; align: left;" colspan="8">Tipo de comprobante</td>
+                                <td style="width: 2pt;">:</td>
+                                <td style="width: 200pt; ">INGRESO  </td>
+                            </tr>
+                            <tr>
+                                <td style="width: 60pt; align: left;" colspan="8">M&eacute;todo de Pago</td>
+                                <td style="width: 2pt;">:</td>
+                                <td style="width: 200pt; ">${record.custbody_mx_txn_sat_payment_term?upper_case}</td>
+                            </tr>
+                            <tr>
+                                <td style="width: 60pt; align: left;" colspan="8">Forma de Pago</td>
+                                <td style="width: 2pt;">:</td>
+                                <td style="width: 200pt;">${record.custbody_mx_txn_sat_payment_method?upper_case}</td>
+                            </tr>
+                            <tr>
+                                <td style="width: 60pt; align: left;" colspan="8">Condiciones de Pago</td>
+                                <td style="width: 2pt;">:</td>
+                                <td style="width: 200pt;">${record.terms}</td>
+                            </tr>
+                            <tr>
+                                <td style="width: 60pt; align: left;" colspan="8">Moneda</td>
+                                <td style="width: 2pt;">:</td>
+                                <td style="width: 200pt;">${record.currency}</td>
+                            </tr>
+                            <tr>
+                                <td style="width: 60pt; align: left;" colspan="8">Tipo de Cambio</td>
+                                <td style="width: 2pt;">:</td>
+                                <td style="width: 200pt;">${record.exchangerate}<br /><br /><br /></td>
+                            </tr>
+                            <tr>
+                                <td style="width: 100%; " colspan="10">${record.custbody_efx_fe_total_text} </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        </td>
+                        <td style="vertical-align: top;">
+                        <br />
+                        <table style="align: right; width: 100%; height: 70pt; border-spacing: 0; table-layout: fixed; word-break:break-all; margin-right:10px; margin-bottom:10px;" cellspacing="0" cellpadding="0">
+                            <tbody>
+                            <#assign taxJSONCab = record.custbody_efx_fe_tax_json>
+                            <#if taxJSONCab?has_content>
+                                <#assign tax = taxJSONCab?eval>
+                            </#if>
+                            <tr>
+                                <td style="align: right; width: 180px;">
+                                <strong>SUBTOTAL: &nbsp; &nbsp;</strong>
+                                </td>
+                                <td style="align: right; width: 90px;border-bottom:1.5px single silver;">${record.subtotal}   </td>
+                            </tr>
+
+                            <#if tax.descuentoSinImpuesto?number != 0>
+                                <tr>
+                                <td style="align: right; width: 180px;">
+                                    <strong>DESCUENTO: &nbsp; &nbsp;</strong>
+                                </td>
+                                <td style="align: right; width: 90px;border-bottom:1.5px single silver;"> -$${tax.descuentoConImpuesto}   </td>
+                                </tr>
+                            </#if>
+
+                            <#if record.shippingcost?keep_after("$") == "">
+                            <#else>
+                                <tr>
+                                <td style="align: right; width: 180px;">
+                                    <strong>ENVÍO: &nbsp; &nbsp;</strong>
+                                </td>
+                                <td style="align: right; width: 90px; border-bottom:1.5px single silver;">${record.shippingcost}</td>
+                                </tr>
+                            </#if>
+
+                            <tr>
+                                <td style="align: right; width: 180px;">
+                                <strong>IVA 16%: &nbsp; &nbsp;</strong>
+                                </td>
+                                <td style="align: right; width: 90px; border-bottom:1.5px single silver;">${record.taxtotal}   </td>
+                            </tr>
+
+                            <#if (tax.retencion_total?number > 0)>
+                                <tr>
+                                    <td style="align: right; width: 180px;">
+                                        <strong>RETENCIÓN: &nbsp; &nbsp;</strong>
+                                    </td>
+                                    <td style="align: right; width: 90px; single silver;"> -$${tax.retencion_total}</td>
+                                </tr>
+                            </#if>
+
+                            <tr>
+                                <td style="align: right; width: 180px;">
+                                <strong>TOTAL: &nbsp; &nbsp;</strong>
+                                </td>
+                                <td style="align: right; width: 90px;">${record.total}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+
+                <#--  Tabla de informacion de facturacion  -->
+                <table style="width: 100%; table-layout: fixed; word-break:break-all; margin-top:10px; font-size: 6px;">
+                    <tbody>
+                        <#assign qrcodeImage = "data:image/png;base64, " + record.custbody_mx_cfdi_qr_code >
+                        <tr style="height: 102pt; margin-top:2pt; margin-bottom:2pt; margin-left:2pt; margin-right:2pt;">
+                            <td style="width: 91pt; height: 122px; vertical-align: top;"><img style="width: 80px;height:80px" src="${qrcodeImage}" /></td>
+                            <td style="width: 469pt; height: 122px; border-top:0.5px single black; border-bottom:0.5px single black; border-left:0.5px single black; border-right:0.5px single black;">
+                            <div style="align: left; margin:0px;">
+                                <strong>CADENA ORIGINAL</strong>
+                                <br />${record.custbody_mx_cfdi_cadena_original}
+                            </div>
+                            <div style="align: left; margin:0px;">
+                                <strong>SELLO DIGITAL DEL CFDI</strong>
+                                <br />${record.custbody_mx_cfdi_signature}
+                            </div>
+                            <div style="align: left; margin:0px;">
+                                <strong>SELLO DEL SAT</strong>
+                                <br />${record.custbody_mx_cfdi_sat_signature}
+                            </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </#if>
+        </#if>
+
+        <span style="margin-top:5px;">Este documento es una representaci&oacute;n impresa de un CFDi</span>
+    </body>
+</pdf>
