@@ -432,7 +432,7 @@
                     <#if record.entity.custentity_mx_sat_industry_type?has_content>
                         <tr>
                             <td style="align: right;  width: 15%;"><b>Regimen Fiscal:</b></td>
-                            <td style="border-right:0.5px single black; width: 35%;" colspan="3">${dataXML.Receptor.atributos.Rfc}  </td>
+                            <td style="border-right:0.5px single black; width: 35%;" colspan="3">${record.entity.custentity_mx_sat_industry_type}  </td>
                         </tr>
                     </#if>
                 </tbody>
@@ -529,25 +529,7 @@
                                                 <#if comercioExterior?has_content>
                                                     <td colspan="4" style="align: left; ">${item.custcol_efx_fe_ce_uni_aduana}<br/><br/></td>
                                                 </#if>
-                                                <td colspan="6" style="align: left; " >${Conceptos[contador].atributos.Descripcion}<br/><br/>
-                                                    <#if record.entity.custentity_mx_sat_industry_type?has_content && Conceptos[contador].atributos.ObjetoImp?has_content>
-                                                        <table>
-                                                            <tr style="padding:0px 0px;" align="center">
-                                                                <td colspan="6" style="align: left; " ><b>Objeto de impuesto:</b>
-                                                                </td>
-                                                                <#--  <td colspan="13" style="font-size: 4pt; padding-top: 1px;  padding-bottom: 1px;">${custcol_mx_txn_line_sat_tax_object}</td>  -->
-                                                                <#if Conceptos[contador].atributos.ObjetoImp?number == 1>
-                                                                    <#assign objImpDesc = "NO OBJETO DE IMPUESTO.">
-                                                                <#elseif Conceptos[contador].atributos.ObjetoImp?number == 2>
-                                                                    <#assign objImpDesc = "SÍ OBJETO DE IMPUESTO.">
-                                                                <#elseif Conceptos[contador].atributos.ObjetoImp?number == 3>
-                                                                    <#assign objImpDesc = "SÍ OBJETO DE IMPUESTO Y NO OBLIGATORIO AL DESGLOSE.">
-                                                                </#if>
-                                                                <td colspan="6" style="align: left; " >${Conceptos[contador].atributos.ObjetoImp} - ${objImpDesc}</td>
-                                                            </tr>
-                                                        </table>
-                                                    </#if>
-                                                </td>
+                                                <td colspan="6" style="align: left; " >${Conceptos[contador].atributos.Descripcion}<br/><br/></td>
 
                                                 <#assign tras = dataXML.Impuestos.Traslados.Traslado.atributos>
                                                 <#if tras?has_content>
@@ -558,6 +540,36 @@
                                                 <td colspan="4" style="align: center;">${Conceptos[contador].atributos.Importe?number?string[",##0.00"]}<br/><br/></td>
 
                                         </tr>
+                                        <#--  Descomentar cuando comercio exterior funcoine en 4.0  -->
+                                        <#--  <#if record.entity.custentity_mx_sat_industry_type?has_content && dataXML.Conceptos.Concepto.atributos.ObjetoImp?has_content>
+                                            <#if dataXML.Conceptos.Concepto.atributos.ObjetoImp?number == 1>
+                                                <#assign objImpDesc = "NO OBJETO DE IMPUESTO.">
+                                            <#elseif dataXML.Conceptos.Concepto.atributos.ObjetoImp?number == 2>
+                                                <#assign objImpDesc = "SÍ OBJETO DE IMPUESTO.">
+                                            <#elseif dataXML.Conceptos.Concepto.atributos.ObjetoImp?number == 3>
+                                                <#assign objImpDesc = "SÍ OBJETO DE IMPUESTO Y NO OBLIGATORIO AL DESGLOSE.">
+                                            </#if>
+                                            <tr style="padding:0px 0px;">
+                                                <td colspan="6"
+                                                    style="font-size: 4pt; padding-top: 1px;  padding-bottom: 1px;"><b>Objeto de impuesto:</b>
+                                                </td>
+                                                <td colspan="13"
+                                                    style="font-size: 4pt; padding-top: 1px;  padding-bottom: 1px;">${dataXML.Conceptos.Concepto.atributos.ObjetoImp} - ${ObjetoImp}</td>
+                                            </tr>
+                                        </#if>  -->
+                                        <#--  Solucion temporal para el objeto de impuestos en comercio exterior  -->
+                                        <#if record.entity.custentity_mx_sat_industry_type?has_content && item.custcol_mx_txn_line_sat_tax_object?has_content>
+                                            <tr>
+                                                <td colspan="39">
+                                                    <table>
+                                                        <tr style="padding:0px 0px;" align="center">
+                                                            <td colspan="6" style="align: left; " ><b>Objeto de impuesto:</b></td>
+                                                            <td colspan="6" style="align: left; " >${item.custcol_mx_txn_line_sat_tax_object}</td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </#if>
                                         <#if item.inventorydetail?has_content>
                                             <tr>
                                                 <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4"><strong>Número Serial</strong></td>
@@ -654,12 +666,28 @@
                                     <td colspan="3" style="align: left; ">${dataXML.Conceptos.Concepto.atributos.ClaveUnidad}<br/><br/></td>
                                     <td colspan="4" style="align: left; ">${item.custcol_efx_fe_ce_uni_aduana}<br/><br/></td>
                                     <td colspan="6" style="align: left; " >${dataXML.Conceptos.Concepto.atributos.Descripcion}<br/><br/>
-                                        <#if record.entity.custentity_mx_sat_industry_type?has_content && Conceptos.Concepto.atributos.ObjetoImp?has_content>
+                                        <#if record.entity.custentity_mx_sat_industry_type?has_content>
+                                            <table>
+                                                <tr style="padding:0px 0px;" align="center">
+                                                    <td colspan="6" style="align: left; " ><b>Objeto de impuesto:</b></td>
+                                                    <#--  <#if record.custcol_mx_txn_line_sat_tax_object == 1>
+                                                        <#assign objImpDesc = "NO OBJETO DE IMPUESTO.">
+                                                    <#elseif record.custcol_mx_txn_line_sat_tax_object == 2>
+                                                        <#assign objImpDesc = "SÍ OBJETO DE IMPUESTO.">
+                                                    <#elseif record.custcol_mx_txn_line_sat_tax_object == 3>
+                                                        <#assign objImpDesc = "SÍ OBJETO DE IMPUESTO Y NO OBLIGATORIO AL DESGLOSE.">
+                                                    </#if>  -->
+                                                    <td colspan="6" style="align: left; " >${record.custcol_mx_txn_line_sat_tax_object}</td>
+                                                    <#--  <td colspan="6" style="align: left; " >${record.custcol_mx_txn_line_sat_tax_object} - ${objImpDesc}</td>  -->
+                                                </tr>
+                                            </table>
+                                        </#if>
+
+                                        <#--  <#if record.entity.custentity_mx_sat_industry_type?has_content && Conceptos.Concepto.atributos.ObjetoImp?has_content>
                                             <table>
                                                 <tr style="padding:0px 0px;" align="center">
                                                     <td colspan="6" style="align: left; " ><b>Objeto de impuesto:</b>
                                                     </td>
-                                                    <#--  <td colspan="13" style="font-size: 4pt; padding-top: 1px;  padding-bottom: 1px;">${custcol_mx_txn_line_sat_tax_object}</td>  -->
                                                     <#if Conceptos.Concepto.atributos.ObjetoImp?number == 1>
                                                         <#assign objImpDesc = "NO OBJETO DE IMPUESTO.">
                                                     <#elseif Conceptos.Concepto.atributos.ObjetoImp?number == 2>
@@ -670,7 +698,7 @@
                                                     <td colspan="6" style="align: left; " >${Conceptos.Concepto.atributos.ObjetoImp} - ${objImpDesc}</td>
                                                 </tr>
                                             </table>
-                                        </#if>
+                                        </#if>  -->
                                     </td>
                             </#list>
 
@@ -681,6 +709,37 @@
                                 <td colspan="3" style="align: right;">${dataXML.atributos.SubTotal?string[",##0.00"]}<br/><br/></td>
                                 <td colspan="4" style="align: center;">${dataXML.atributos.Total?string[",##0.00"]}<br/><br/></td>
                             </tr>
+                            <#--  Descomentar cuando comercio exterior funcoine en 4.0  -->
+                            <#--  <#if record.entity.custentity_mx_sat_industry_type?has_content && dataXML.Conceptos.Concepto.atributos.ObjetoImp?has_content>
+                                <#if dataXML.Conceptos.Concepto.atributos.ObjetoImp?number == 1>
+                                    <#assign objImpDesc = "NO OBJETO DE IMPUESTO.">
+                                <#elseif dataXML.Conceptos.Concepto.atributos.ObjetoImp?number == 2>
+                                    <#assign objImpDesc = "SÍ OBJETO DE IMPUESTO.">
+                                <#elseif dataXML.Conceptos.Concepto.atributos.ObjetoImp?number == 3>
+                                    <#assign objImpDesc = "SÍ OBJETO DE IMPUESTO Y NO OBLIGATORIO AL DESGLOSE.">
+                                </#if>
+                                <tr style="padding:0px 0px;">
+                                    <td colspan="6"
+                                        style="font-size: 4pt; padding-top: 1px;  padding-bottom: 1px;"><b>Objeto de impuesto:</b>
+                                    </td>
+                                    <td colspan="13"
+                                        style="font-size: 4pt; padding-top: 1px;  padding-bottom: 1px;">${dataXML.Conceptos.Concepto.atributos.ObjetoImp} - ${ObjetoImp}</td>
+                                </tr>
+                            </#if>  -->
+                            <#--  Solucion temporal para el objeto de impuestos en comercio exterior  -->
+                            <#if record.entity.custentity_mx_sat_industry_type?has_content && item.custcol_mx_txn_line_sat_tax_object?has_content>
+                                <tr>
+                                    <td colspan="39">
+                                        <table>
+                                            <tr style="padding:0px 0px;" align="center">
+                                                <td colspan="6" style="align: left; " ><b>Objeto de impuesto:</b></td>
+                                                <td colspan="6" style="align: left; " >${item.custcol_mx_txn_line_sat_tax_object}</td>
+                                            </tr>
+
+                                        </table>
+                                    </td>
+                                </tr>
+                            </#if>
                             <#if item.inventorydetail?has_content>
                                 <tr>
                                     <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4"><strong>Número Serial</strong></td>
@@ -867,8 +926,6 @@
                             <#assign desglose_json = item.custcol_efx_fe_tax_json>
                             <#if desglose_json?has_content>
                                 <#assign desglose = desglose_json?eval>
-                            <#else>
-                                <#assign desglose = "No hay JSON de linea">
                             </#if>
                             <tr>
                                 <td style="align: center; border-bottom:0.5px single black;" colspan="21"><b>Concepto   ${item_index+1} </b></td>
@@ -951,25 +1008,7 @@
                             </#if>
                             <td colspan="1" style="align: left; ">${item.units}<br/><br/></td>
                             <td colspan="1" style="align: left; ">${units_sat}<br/><br/></td>
-                            <td colspan="6" style="align: left;">${item.description}<br/><br/>
-                                <#if record.entity.custentity_mx_sat_industry_type?has_content && Conceptos.Concepto.atributos.ObjetoImp?has_content>
-                                    <table>
-                                        <tr style="padding:0px 0px;" align="center">
-                                            <td colspan="6" style="align: left; " ><b>Objeto de impuesto:</b>
-                                            </td>
-                                            <#--  <td colspan="13" style="font-size: 4pt; padding-top: 1px;  padding-bottom: 1px;">${custcol_mx_txn_line_sat_tax_object}</td>  -->
-                                            <#if Conceptos.Concepto.atributos.ObjetoImp?number == 1>
-                                                <#assign objImpDesc = "NO OBJETO DE IMPUESTO.">
-                                            <#elseif Conceptos.Concepto.atributos.ObjetoImp?number == 2>
-                                                <#assign objImpDesc = "SÍ OBJETO DE IMPUESTO.">
-                                            <#elseif Conceptos.Concepto.atributos.ObjetoImp?number == 3>
-                                                <#assign objImpDesc = "SÍ OBJETO DE IMPUESTO Y NO OBLIGATORIO AL DESGLOSE.">
-                                            </#if>
-                                            <td colspan="6" style="align: left; " >${Conceptos.Concepto.atributos.ObjetoImp} - ${objImpDesc}</td>
-                                        </tr>
-                                    </table>
-                                </#if>
-                            </td>
+                            <td colspan="6" style="align: left;">${item.description}<br/><br/></td>
 
                             <#if desglose.iva.name?has_content>
                                 <td colspan="2" style="align: left;">${desglose.iva.factor} IVA <br/> <span style=" font-size: 7pt">${desglose.iva.importe}</span></td>
@@ -978,29 +1017,59 @@
                             <td colspan="2" style="align: right; ">${item.rate?string[",##0.00"]}<br/><br/></td>
                             <td colspan="2" style="align: center; ">${item.grossamt}<br/><br/></td>
                             </tr>
-                            <#if item.inventorydetail?has_content>
-                            <tr>
-                                <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="5"><strong>Número Serial</strong></td>
-                                <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4"><strong>Número de Motor</strong></td>
-                                <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4"><strong>Pedimento</strong></td>
-                                <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4"><strong>Fecha Entrada</strong></td>
-                                <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;" colspan="4"><strong>Repuve</strong></td>
-                            </tr>
-                            <#assign "detalle_inventario_json" = item.custcol_efx_invdet_json + item.custcol_efx_invdet_json2 + item.custcol_efx_invdet_json3 + item.custcol_efx_invdet_json4 + item.custcol_efx_invdet_json5>
-                            <#assign "detalle_inventario" = detalle_inventario_json?eval>
-                            <#list detalle_inventario as detalle_inv>
-                                <tr>
-                                <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="5">${detalle_inv.inventorynumber}	         </td>
-                                <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4">${detalle_inv.num_motor}</td>
-                                <#if detalle_inv.inventorynumber?starts_with("3MU")>
-                                    <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4">ENSAMBLE EN MEXICO</td>
-                                <#else>
-                                    <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4">${detalle_inv.num_pedimento}</td>
+                            <#--  Descomentar cuando comercio exterior funcoine en 4.0  -->
+                            <#--  <#if record.entity.custentity_mx_sat_industry_type?has_content && dataXML.Conceptos.Concepto.atributos.ObjetoImp?has_content>
+                                <#if dataXML.Conceptos.Concepto.atributos.ObjetoImp?number == 1>
+                                    <#assign objImpDesc = "NO OBJETO DE IMPUESTO.">
+                                <#elseif dataXML.Conceptos.Concepto.atributos.ObjetoImp?number == 2>
+                                    <#assign objImpDesc = "SÍ OBJETO DE IMPUESTO.">
+                                <#elseif dataXML.Conceptos.Concepto.atributos.ObjetoImp?number == 3>
+                                    <#assign objImpDesc = "SÍ OBJETO DE IMPUESTO Y NO OBLIGATORIO AL DESGLOSE.">
                                 </#if>
-                                <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4">${detalle_inv.fecha_entrada_pedimento}</td>
-                                <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;" colspan="4">${detalle_inv.repuve}</td>
+                                <tr style="padding:0px 0px;">
+                                    <td colspan="6"
+                                        style="font-size: 4pt; padding-top: 1px;  padding-bottom: 1px;"><b>Objeto de impuesto:</b>
+                                    </td>
+                                    <td colspan="13"
+                                        style="font-size: 4pt; padding-top: 1px;  padding-bottom: 1px;">${dataXML.Conceptos.Concepto.atributos.ObjetoImp} - ${ObjetoImp}</td>
                                 </tr>
-                            </#list>
+                            </#if>  -->
+                            <#--  Solucion temporal para el objeto de impuestos en comercio exterior  -->
+                            <#if record.entity.custentity_mx_sat_industry_type?has_content && item.custcol_mx_txn_line_sat_tax_object?has_content>
+                                <tr>
+                                    <td colspan="21">
+                                        <table>
+                                            <tr style="padding:0px 0px;" align="center">
+                                                <td colspan="6" style="align: left; " ><b>Objeto de impuesto:</b></td>
+                                                <td colspan="6" style="align: left; " >${item.custcol_mx_txn_line_sat_tax_object}</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </#if>
+                            <#if item.inventorydetail?has_content>
+                                <tr>
+                                    <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="5"><strong>Número Serial</strong></td>
+                                    <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4"><strong>Número de Motor</strong></td>
+                                    <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4"><strong>Pedimento</strong></td>
+                                    <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4"><strong>Fecha Entrada</strong></td>
+                                    <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;" colspan="4"><strong>Repuve</strong></td>
+                                </tr>
+                                <#assign "detalle_inventario_json" = item.custcol_efx_invdet_json + item.custcol_efx_invdet_json2 + item.custcol_efx_invdet_json3 + item.custcol_efx_invdet_json4 + item.custcol_efx_invdet_json5>
+                                <#assign "detalle_inventario" = detalle_inventario_json?eval>
+                                <#list detalle_inventario as detalle_inv>
+                                    <tr>
+                                    <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="5">${detalle_inv.inventorynumber}	         </td>
+                                    <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4">${detalle_inv.num_motor}</td>
+                                    <#if detalle_inv.inventorynumber?starts_with("3MU")>
+                                        <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4">ENSAMBLE EN MEXICO</td>
+                                    <#else>
+                                        <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4">${detalle_inv.num_pedimento}</td>
+                                    </#if>
+                                    <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4">${detalle_inv.fecha_entrada_pedimento}</td>
+                                    <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;" colspan="4">${detalle_inv.repuve}</td>
+                                    </tr>
+                                </#list>
                             </#if>
                         </#list>
                         <tr>
@@ -1044,7 +1113,12 @@
                                         <tr>
                                             <td style="width: 60pt; align: left;" colspan="8">Tipo de Cambio</td>
                                             <td style="width: 2pt;">:</td>
-                                            <td style="width: 200pt;">${record.exchangerate}<br /><br /><br /></td>
+                                            <td style="width: 200pt;">${record.exchangerate}</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 60pt; align: left;" colspan="8">Tipo de exportación</td>
+                                            <td style="width: 2pt;">:</td>
+                                            <td style="width: 200pt;">${record.custbody_mx_cfdi_sat_export_type}<br /><br /><br /></td>
                                         </tr>
                                         <tr>
                                             <td style="width: 100%; " colspan="10">${record.custbody_efx_fe_total_text} </td>
@@ -1073,7 +1147,7 @@
                                             </tr>
                                         </#if>
 
-                                        <#if record.shippingcost?has_content>
+                                        <#if record.shippingcost?number gt 0>
                                             <tr>
                                             <td style="align: right; width: 180px;">
                                                 <strong>ENVÍO: &nbsp; &nbsp;</strong>
@@ -1277,8 +1351,6 @@
                             <#assign desglose_json = item.custcol_efx_fe_tax_json>
                             <#if desglose_json?has_content>
                                 <#assign desglose = desglose_json?eval>
-                            <#else>
-                                <#assign desglose = "No hay JSON de linea">
                             </#if>
                             <tr>
                                 <td colspan="40" style="align: center; border-bottom:0.5px single black;" ><b>Concepto   ${item_index+1} </b></td>
@@ -1375,24 +1447,7 @@
                                     <#--  <td colspan="3" style="align: left; ">${units_sat}<br/><br/></td>  -->
                                 <#--  <td colspan="3" style="align: left; ">${units_sat}<br/><br/></td>  -->
                                 <td colspan="4" style="align: left; ">${item.custcol_efx_fe_ce_uni_aduana}<br/><br/></td>
-                                <td colspan="6" style="align: left; " >${item.description}<br/><br/>
-                                    <#if record.entity.custentity_mx_sat_industry_type?has_content && dataXML.Conceptos.Concepto.atributos.ObjetoImp?has_content>
-                                        <#if dataXML.Conceptos.Concepto.atributos.ObjetoImp?number == 1>
-                                            <#assign objImpDesc = "NO OBJETO DE IMPUESTO.">
-                                        <#elseif dataXML.Conceptos.Concepto.atributos.ObjetoImp?number == 2>
-                                            <#assign objImpDesc = "SÍ OBJETO DE IMPUESTO.">
-                                        <#elseif dataXML.Conceptos.Concepto.atributos.ObjetoImp?number == 3>
-                                            <#assign objImpDesc = "SÍ OBJETO DE IMPUESTO Y NO OBLIGATORIO AL DESGLOSE.">
-                                        </#if>
-                                        <tr style="padding:0px 0px;">
-                                            <td colspan="6"
-                                                style="font-size: 4pt; padding-top: 1px;  padding-bottom: 1px;"><b>Objeto de impuesto:</b>
-                                            </td>
-                                            <td colspan="13"
-                                                style="font-size: 4pt; padding-top: 1px;  padding-bottom: 1px;">${dataXML.Conceptos.Concepto.atributos.ObjetoImp} - ${ObjetoImp}</td>
-                                        </tr>
-                                    </#if>
-                                </td>
+                                <td colspan="6" style="align: left; " >${item.description}<br/><br/></td>
 
                                 <#if desglose.iva.name?has_content>
                                     <td colspan="4" style="align: left;">${desglose.iva.factor} IVA <br/> <span style=" font-size: 7pt">${desglose.iva.importe}</span></td>
@@ -1401,6 +1456,37 @@
                                 <td colspan="3" style="align: right;">${item.rate?string[",##0.00"]}<br/><br/></td>
                                 <td colspan="4" style="align: center;">${item.grossamt}<br/><br/></td>
                             </tr>
+                            <#--  Descomentar cuando comercio exterior funcoine en 4.0  -->
+                            <#--  <#if record.entity.custentity_mx_sat_industry_type?has_content && dataXML.Conceptos.Concepto.atributos.ObjetoImp?has_content>
+                                <#if dataXML.Conceptos.Concepto.atributos.ObjetoImp?number == 1>
+                                    <#assign objImpDesc = "NO OBJETO DE IMPUESTO.">
+                                <#elseif dataXML.Conceptos.Concepto.atributos.ObjetoImp?number == 2>
+                                    <#assign objImpDesc = "SÍ OBJETO DE IMPUESTO.">
+                                <#elseif dataXML.Conceptos.Concepto.atributos.ObjetoImp?number == 3>
+                                    <#assign objImpDesc = "SÍ OBJETO DE IMPUESTO Y NO OBLIGATORIO AL DESGLOSE.">
+                                </#if>
+                                <tr style="padding:0px 0px;">
+                                    <td colspan="6"
+                                        style="font-size: 4pt; padding-top: 1px;  padding-bottom: 1px;"><b>Objeto de impuesto:</b>
+                                    </td>
+                                    <td colspan="13"
+                                        style="font-size: 4pt; padding-top: 1px;  padding-bottom: 1px;">${dataXML.Conceptos.Concepto.atributos.ObjetoImp} - ${ObjetoImp}</td>
+                                </tr>
+                            </#if>  -->
+                            <#--  Solucion temporal para el objeto de impuestos en comercio exterior  -->
+                            <#if record.entity.custentity_mx_sat_industry_type?has_content && item.custcol_mx_txn_line_sat_tax_object?has_content>
+                                <tr>
+                                    <td colspan="39">
+                                        <table>
+                                            <tr style="padding:0px 0px;" align="center">
+                                                <td colspan="6" style="align: left; " ><b>Objeto de impuesto:</b></td>
+                                                <td colspan="6" style="align: left; " >${item.custcol_mx_txn_line_sat_tax_object}</td>
+                                            </tr>
+
+                                        </table>
+                                    </td>
+                                </tr>
+                            </#if>
                             <#if item.inventorydetail?has_content>
                                 <tr>
                                     <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4"><strong>Número Serial</strong></td>
@@ -1562,8 +1648,6 @@
                             <#assign desglose_json = item.custcol_efx_fe_tax_json>
                             <#if desglose_json?has_content>
                             <#assign desglose = desglose_json?eval>
-                            <#else>
-                            <#assign desglose = "No hay JSON de linea">
                             </#if>
                             <tr>
                             <td style="align: center; border-bottom:0.5px single black;" colspan="21"><b>Concepto   ${item_index+1} </b></td>
@@ -1655,29 +1739,59 @@
                             <td colspan="2" style="align: right; ">${item.rate?string[",##0.00"]}<br/><br/></td>
                             <td colspan="2" style="align: center; ">${item.grossamt}<br/><br/></td>
                             </tr>
-                            <#if item.inventorydetail?has_content>
-                            <tr>
-                                <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="5"><strong>Número Serial</strong></td>
-                                <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4"><strong>Número de Motor</strong></td>
-                                <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4"><strong>Pedimento</strong></td>
-                                <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4"><strong>Fecha Entrada</strong></td>
-                                <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;" colspan="4"><strong>Repuve</strong></td>
-                            </tr>
-                            <#assign "detalle_inventario_json" = item.custcol_efx_invdet_json + item.custcol_efx_invdet_json2 + item.custcol_efx_invdet_json3 + item.custcol_efx_invdet_json4 + item.custcol_efx_invdet_json5>
-                            <#assign "detalle_inventario" = detalle_inventario_json?eval>
-                            <#list detalle_inventario as detalle_inv>
-                                <tr>
-                                <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="5">${detalle_inv.inventorynumber}	         </td>
-                                <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4">${detalle_inv.num_motor}</td>
-                                <#if detalle_inv.inventorynumber?starts_with("3MU")>
-                                    <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4">ENSAMBLE EN MEXICO</td>
-                                <#else>
-                                    <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4">${detalle_inv.num_pedimento}</td>
+                            <#--  Descomentar cuando comercio exterior funcoine en 4.0  -->
+                            <#--  <#if record.entity.custentity_mx_sat_industry_type?has_content && dataXML.Conceptos.Concepto.atributos.ObjetoImp?has_content>
+                                <#if dataXML.Conceptos.Concepto.atributos.ObjetoImp?number == 1>
+                                    <#assign objImpDesc = "NO OBJETO DE IMPUESTO.">
+                                <#elseif dataXML.Conceptos.Concepto.atributos.ObjetoImp?number == 2>
+                                    <#assign objImpDesc = "SÍ OBJETO DE IMPUESTO.">
+                                <#elseif dataXML.Conceptos.Concepto.atributos.ObjetoImp?number == 3>
+                                    <#assign objImpDesc = "SÍ OBJETO DE IMPUESTO Y NO OBLIGATORIO AL DESGLOSE.">
                                 </#if>
-                                <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4">${detalle_inv.fecha_entrada_pedimento}</td>
-                                <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;" colspan="4">${detalle_inv.repuve}</td>
+                                <tr style="padding:0px 0px;">
+                                    <td colspan="6"
+                                        style="font-size: 4pt; padding-top: 1px;  padding-bottom: 1px;"><b>Objeto de impuesto:</b>
+                                    </td>
+                                    <td colspan="13"
+                                        style="font-size: 4pt; padding-top: 1px;  padding-bottom: 1px;">${dataXML.Conceptos.Concepto.atributos.ObjetoImp} - ${ObjetoImp}</td>
                                 </tr>
-                            </#list>
+                            </#if>  -->
+                            <#--  Solucion temporal para el objeto de impuestos en comercio exterior  -->
+                            <#if record.entity.custentity_mx_sat_industry_type?has_content && item.custcol_mx_txn_line_sat_tax_object?has_content>
+                                <tr>
+                                    <td colspan="21">
+                                        <table>
+                                            <tr style="padding:0px 0px;" align="center">
+                                                <td colspan="6" style="align: left; " ><b>Objeto de impuesto:</b></td>
+                                                <td colspan="6" style="align: left; " >${item.custcol_mx_txn_line_sat_tax_object}</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </#if>
+                            <#if item.inventorydetail?has_content>
+                                <tr>
+                                    <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="5"><strong>Número Serial</strong></td>
+                                    <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4"><strong>Número de Motor</strong></td>
+                                    <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4"><strong>Pedimento</strong></td>
+                                    <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4"><strong>Fecha Entrada</strong></td>
+                                    <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;" colspan="4"><strong>Repuve</strong></td>
+                                </tr>
+                                <#assign "detalle_inventario_json" = item.custcol_efx_invdet_json + item.custcol_efx_invdet_json2 + item.custcol_efx_invdet_json3 + item.custcol_efx_invdet_json4 + item.custcol_efx_invdet_json5>
+                                <#assign "detalle_inventario" = detalle_inventario_json?eval>
+                                <#list detalle_inventario as detalle_inv>
+                                    <tr>
+                                    <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="5">${detalle_inv.inventorynumber}	         </td>
+                                    <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4">${detalle_inv.num_motor}</td>
+                                    <#if detalle_inv.inventorynumber?starts_with("3MU")>
+                                        <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4">ENSAMBLE EN MEXICO</td>
+                                    <#else>
+                                        <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4">${detalle_inv.num_pedimento}</td>
+                                    </#if>
+                                    <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="4">${detalle_inv.fecha_entrada_pedimento}</td>
+                                    <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;" colspan="4">${detalle_inv.repuve}</td>
+                                    </tr>
+                                </#list>
                             </#if>
                         </#list>
                         <tr>
@@ -1721,7 +1835,7 @@
                             <tr>
                                 <td style="width: 60pt; align: left;" colspan="8">Tipo de Cambio</td>
                                 <td style="width: 2pt;">:</td>
-                                <td style="width: 200pt;">${record.exchangerate}<br /><br /><br /></td>
+                                <td style="width: 200pt;">${record.exchangerate}</td>
                             </tr>
                             <tr>
                                 <td style="width: 60pt; align: left;" colspan="8">Tipo de exportación</td>
@@ -1758,7 +1872,7 @@
                                 </tr>
                             </#if>
 
-                            <#if record.shippingcost?has_content>
+                            <#if record.shippingcost?number gt 0>
                                 <tr>
                                 <td style="align: right; width: 180px;">
                                     <strong>ENVÍO: &nbsp; &nbsp;</strong>
@@ -1822,7 +1936,7 @@
 
             </#if>
         </#if>
-
-        <span style="margin-top:5px;">Este documento es una representaci&oacute;n impresa de un CFDi</span>
+        <#assign aDateTime = .now>
+        <span style="margin-top:5px;">"Este documento es una representaci&oacute;n impresa de un CFDi". <b>Usuario:</b> ${user.firstname} ${user.lastname} <b>Fecha de impresión:</b> ${aDateTime?date}</span>
     </body>
 </pdf>
