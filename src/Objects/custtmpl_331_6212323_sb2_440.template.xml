@@ -1324,6 +1324,12 @@
                         <td style="align: right;  width: 15%;"><b>Uso CFDI</b>:</td>
                         <td style="border-right:0.5px single black; width: 35%;" colspan="3">${record.custbody_mx_cfdi_usage}  </td>
                     </tr>
+                    <#if record.entity.custentity_mx_sat_industry_type?has_content>
+                        <tr>
+                            <td style="align: right;  width: 15%;"><b>Regimen Fiscal:</b></td>
+                            <td style="border-right:0.5px single black; width: 35%;" colspan="3">${record.entity.custentity_mx_sat_industry_type}  </td>
+                        </tr>
+                    </#if>
                 </tbody>
             </table>
 

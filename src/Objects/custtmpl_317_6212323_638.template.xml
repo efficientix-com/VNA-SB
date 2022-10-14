@@ -76,6 +76,7 @@
           }
           td {
               padding: 4px 6px;
+              /*border: 1px solid red;*/
           }
       td p { align:left }
           b {
@@ -155,50 +156,50 @@
               <span>Régimen Fiscal: ${satCodes.industryTypeName?keep_before(" ")}</span><br />
             </td>
 
-          <td colspan="4" style="font-size: 10px; width: 40%;" align="right">
-          <table style="font-weight:bold; height:70.8pt; table-layout: fixed; word-break:break-all;" border="1" font-size="8.5px" >
-            <tbody>
-              <tr>
-                <td style="width: 82pt; align: right;">NOTE DE CRÉDITO</td>
-                <td style="width: 2pt;">:</td>
-                <td style="width: 85pt;">${record.tranid} </td>
-              </tr>
-              <tr>
-                <td style="width: 78pt; align: right;">Folio Fiscal</td>
-                <td style="width: 2pt;">:</td>
-                <td style="width: 85pt;">${certData.custbody_mx_cfdi_uuid}</td>
-              </tr>
-              <tr>
-                <td style="width: 82pt; align: right;">No. Certificado SAT</td>
-                <td style="width: 2pt;">:</td>
-                <td style="width: 85pt;">&nbsp;${certData.custbody_mx_cfdi_sat_serial}</td>
-              </tr>
-              <tr>
-                <td style="width: 82pt; align: right;">No. Certificado</td>
-                <td style="width: 2pt;">:</td>
-                <td style="width: 85pt;">&nbsp;${certData.custbody_mx_cfdi_issuer_serial}</td>
-              </tr>
-              <tr>
-                <td style="width: 90pt; align: right;">Fecha de Expedición</td>
-                <td style="width: 2pt;">:</td>
-                <td style="width: 85pt;">&nbsp;${record.trandate?string.iso_nz}T00:00:00  </td>
-              </tr>
-              <tr>
-                <td style="width: 100pt; align: right;">Fecha de Certificación</td>
-                <td style="width: 2pt;">:</td>
-                <td style="width: 85pt;">&nbsp;${certData.custbody_mx_cfdi_certify_timestamp}  </td>
-              </tr>
-              <tr>
-                <td style="width: 87pt; align: right;">Expedida en</td>
-                <td style="width: 2pt;">:</td>
-                <td style="width: 85pt;">${customCompanyInfo.city} </td>
-              </tr>
-            </tbody>
-          </table>
-        </td>
-        </tr>
-      </tbody>
-      </table>
+            <td colspan="4" style="font-size: 10px; width: 40%;" align="right">
+              <table style="font-weight:bold; height:70.8pt; table-layout: fixed; word-break:break-all;" border="1" font-size="8.5px" >
+                <tbody>
+                  <tr>
+                    <td style="width: 82pt; align: right;">NOTE DE CRÉDITO</td>
+                    <td style="width: 2pt;">:</td>
+                    <td style="width: 85pt;">${record.tranid} </td>
+                  </tr>
+                  <tr>
+                    <td style="width: 78pt; align: right;">Folio Fiscal</td>
+                    <td style="width: 2pt;">:</td>
+                    <td style="width: 85pt;">${certData.custbody_mx_cfdi_uuid}</td>
+                  </tr>
+                  <tr>
+                    <td style="width: 82pt; align: right;">No. Certificado SAT</td>
+                    <td style="width: 2pt;">:</td>
+                    <td style="width: 85pt;">&nbsp;${certData.custbody_mx_cfdi_sat_serial}</td>
+                  </tr>
+                  <tr>
+                    <td style="width: 82pt; align: right;">No. Certificado</td>
+                    <td style="width: 2pt;">:</td>
+                    <td style="width: 85pt;">&nbsp;${certData.custbody_mx_cfdi_issuer_serial}</td>
+                  </tr>
+                  <tr>
+                    <td style="width: 90pt; align: right;">Fecha de Expedición</td>
+                    <td style="width: 2pt;">:</td>
+                    <td style="width: 85pt;">&nbsp;${record.trandate?string.iso_nz}T00:00:00  </td>
+                  </tr>
+                  <tr>
+                    <td style="width: 100pt; align: right;">Fecha de Certificación</td>
+                    <td style="width: 2pt;">:</td>
+                    <td style="width: 85pt;">&nbsp;${certData.custbody_mx_cfdi_certify_timestamp}  </td>
+                  </tr>
+                  <tr>
+                    <td style="width: 87pt; align: right;">Expedida en</td>
+                    <td style="width: 2pt;">:</td>
+                    <td style="width: 85pt;">${customCompanyInfo.city} </td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+          </tr>
+        </tbody>
+    </table>
 
 
 
@@ -250,13 +251,21 @@
             <td style="align: right;  width: 15%;"><b>Uso CFDI</b>:</td>
             <td style="border-right:0.5px single black; width: 35%;" colspan="3">${record.custbody_mx_cfdi_usage}  </td>
           </tr>
+          <#if record.entity.custentity_mx_sat_industry_type?has_content>
+              <tr>
+                  <td style="align: right;  width: 15%;"><b>Regimen Fiscal:</b></td>
+                  <td style="border-right:0.5px single black; width: 35%;" colspan="3">${record.entity.custentity_mx_sat_industry_type}  </td>
+              </tr>
+          </#if>
 
         </tbody>
       </table>
 
 
 
-    <#if record.item?has_content><#assign "total_cajas" = 0><#assign "total_piezas" = 0>
+    <#if record.item?has_content>
+      <#assign "total_cajas" = 0>
+      <#assign "total_piezas" = 0>
       <#assign "obj_cajas"= {}>
 
 
@@ -315,6 +324,37 @@
               <td style="align: right; width: 56pt;">${item.rate?string[",##0.00"]}<br/><br/></td>
               <td style="align: center; width: 56pt;">${item.grossamt}<br/><br/></td>
             </tr>
+            <#--  Descomentar cuando comercio exterior funcoine en 4.0  -->
+            <#--  <#if record.entity.custentity_mx_sat_industry_type?has_content && dataXML.Conceptos.Concepto.atributos.ObjetoImp?has_content>
+                <#if dataXML.Conceptos.Concepto.atributos.ObjetoImp?number == 1>
+                    <#assign objImpDesc = "NO OBJETO DE IMPUESTO.">
+                <#elseif dataXML.Conceptos.Concepto.atributos.ObjetoImp?number == 2>
+                    <#assign objImpDesc = "SÍ OBJETO DE IMPUESTO.">
+                <#elseif dataXML.Conceptos.Concepto.atributos.ObjetoImp?number == 3>
+                    <#assign objImpDesc = "SÍ OBJETO DE IMPUESTO Y NO OBLIGATORIO AL DESGLOSE.">
+                </#if>
+                <tr style="padding:0px 0px;">
+                    <td colspan="6"
+                        style="font-size: 4pt; padding-top: 1px;  padding-bottom: 1px;"><b>Objeto de impuesto:</b>
+                    </td>
+                    <td colspan="13"
+                        style="font-size: 4pt; padding-top: 1px;  padding-bottom: 1px;">${dataXML.Conceptos.Concepto.atributos.ObjetoImp} - ${ObjetoImp}</td>
+                </tr>
+            </#if>  -->
+            <#--  Solucion temporal para el objeto de impuestos en comercio exterior  -->
+            <#if record.entity.custentity_mx_sat_industry_type?has_content && item.custcol_mx_txn_line_sat_tax_object?has_content>
+                <tr>
+                    <td colspan="8">
+                        <table>
+                            <tr style="padding:0px 0px;" align="center">
+                                <td colspan="6" style="align: left; " ><b>Objeto de impuesto:</b></td>
+                                <td colspan="6" style="align: left; " >${item.custcol_mx_txn_line_sat_tax_object}</td>
+                            </tr>
+
+                        </table>
+                    </td>
+                </tr>
+            </#if>
             <#if item.inventorydetail?has_content>
               <tr>
                 <td style="align: center; border-bottom:0.5px single black;border-top:0.5px single black;border-right:0.5px single black;" colspan="2"><strong>Número Serial</strong></td>
@@ -336,78 +376,117 @@
                 </#list>
             </#if>
         </#list>
-        <tr><td colspan="6"><strong>Notas:</strong><br/>${record.memo}</td></tr>
+        <tr><td colspan="8"><strong>Notas:</strong><br/>${record.memo}</td></tr>
       </table>
 
+      <#--  Tabla de informacion de totales e informcacion del CFDI  -->
       <table style="width: 100%;   border-spacing: 0; table-layout: fixed; word-break:break-all; margin-top:20px;" border="0.5px" cellspacing="0" cellpadding="0" >
-        <tbody>
+          <tbody>
           <tr>
-            <td style="width: 60%;" rowspan="8">
+              <td style="width: 60%;" rowspan="8">
               <table style="width: 100%; table-layout: fixed; word-break:break-all; border-collapse:collapse; margin-top:10px; margin-left:10px; margin-bottom:10px;" cellspacing="0" cellpadding="0">
-                <tbody>
+                  <tbody>
                   <tr>
-                    <td style="width: 60pt; align: left;">Tipo de comprobante</td>
-                    <td style="width: 2pt;">:</td>
-                    <td style="width: 200pt; ">EGRESO  </td>
+                      <td style="width: 60pt; align: left;" colspan="8">Tipo de comprobante</td>
+                      <td style="width: 2pt;">:</td>
+                      <td style="width: 200pt; ">INGRESO  </td>
                   </tr>
                   <tr>
-                    <td style="width: 60pt; align: left;">M&eacute;todo de Pago</td>
-                    <td style="width: 2pt;">:</td>
-                    <td style="width: 200pt; ">${record.custbody_mx_txn_sat_payment_term?upper_case}</td>
+                      <td style="width: 60pt; align: left;" colspan="8">M&eacute;todo de Pago</td>
+                      <td style="width: 2pt;">:</td>
+                      <td style="width: 200pt; ">${record.custbody_mx_txn_sat_payment_term?upper_case}</td>
                   </tr>
                   <tr>
-                    <td style="width: 60pt; align: left;">Forma de Pago</td>
-                    <td style="width: 2pt;">:</td>
-                    <td style="width: 200pt;">${record.custbody_mx_txn_sat_payment_method?upper_case}</td>
+                      <td style="width: 60pt; align: left;" colspan="8">Forma de Pago</td>
+                      <td style="width: 2pt;">:</td>
+                      <td style="width: 200pt;">${record.custbody_mx_txn_sat_payment_method?upper_case}</td>
                   </tr>
                   <tr>
-                    <td style="width: 60pt; align: left;">Condiciones de Pago</td>
-                    <td style="width: 2pt;">:</td>
-                    <td style="width: 200pt;">${record.terms}</td>
+                      <td style="width: 60pt; align: left;" colspan="8">Condiciones de Pago</td>
+                      <td style="width: 2pt;">:</td>
+                      <td style="width: 200pt;">${record.terms}</td>
                   </tr>
                   <tr>
-                    <td style="width: 60pt; align: left;">Moneda</td>
-                    <td style="width: 2pt;">:</td>
-                    <td style="width: 200pt;">${record.currency}</td>
+                      <td style="width: 60pt; align: left;" colspan="8">Moneda</td>
+                      <td style="width: 2pt;">:</td>
+                      <td style="width: 200pt;">${record.currency}</td>
                   </tr>
                   <tr>
-                    <td style="width: 60pt; align: left;">Tipo de Cambio</td>
-                    <td style="width: 2pt;">:</td>
-                    <td style="width: 200pt;">${record.exchangerate}<br /><br /><br /></td>
+                      <td style="width: 60pt; align: left;" colspan="8">Tipo de Cambio</td>
+                      <td style="width: 2pt;">:</td>
+                      <td style="width: 200pt;">${record.exchangerate}</td>
                   </tr>
                   <tr>
-                    <td style="width: 100%; " colspan="3">${record.custbody_efx_fe_total_text} </td>
+                      <td style="width: 60pt; align: left;" colspan="8">Tipo de exportación</td>
+                      <td style="width: 2pt;">:</td>
+                      <td style="width: 200pt;">${record.custbody_mx_cfdi_sat_export_type}<br /><br /><br /></td>
                   </tr>
-                </tbody>
+                  <tr>
+                      <td style="width: 100%; " colspan="10">${record.custbody_efx_fe_total_text} </td>
+                  </tr>
+                  </tbody>
               </table>
-            </td>
-            <td style="vertical-align: top;">
+              </td>
+              <td style="vertical-align: top;">
               <br />
-              <table style="align: right; width: 40%; height: 70pt; border-spacing: 0; table-layout: fixed; word-break:break-all; margin-right:10px; margin-bottom:10px;" cellspacing="0" cellpadding="0">
-                <tbody>
+              <table style="align: right; width: 100%; height: 70pt; border-spacing: 0; table-layout: fixed; word-break:break-all; margin-right:10px; margin-bottom:10px;" cellspacing="0" cellpadding="0">
+                  <tbody>
+                  <#assign taxJSONCab = record.custbody_efx_fe_tax_json>
+                  <#if taxJSONCab?has_content>
+                      <#assign tax = taxJSONCab?eval>
+                  </#if>
                   <tr>
-                    <td style="align: right; width: 90px;">
+                      <td style="align: right; width: 180px;">
                       <strong>SUBTOTAL: &nbsp; &nbsp;</strong>
-                    </td>
-                    <td style="align: right; width: 190px;border-bottom:1.5px single silver;">${record.subtotal}   </td>
+                      </td>
+                      <td style="align: right; width: 90px;border-bottom:1.5px single silver;">${record.subtotal}   </td>
                   </tr>
+
+                  <#if tax.descuentoSinImpuesto?number != 0>
+                      <tr>
+                      <td style="align: right; width: 180px;">
+                          <strong>DESCUENTO: &nbsp; &nbsp;</strong>
+                      </td>
+                      <td style="align: right; width: 90px;border-bottom:1.5px single silver;"> -$${tax.descuentoConImpuesto}   </td>
+                      </tr>
+                  </#if>
+
+                  <#if record.shippingcost?number gt 0>
+                      <tr>
+                      <td style="align: right; width: 180px;">
+                          <strong>ENVÍO: &nbsp; &nbsp;</strong>
+                      </td>
+                      <td style="align: right; width: 90px; border-bottom:1.5px single silver;">${record.shippingcost}</td>
+                      </tr>
+                  </#if>
+
                   <tr>
-                    <td style="align: right; width: 90px;">
+                      <td style="align: right; width: 180px;">
                       <strong>IVA 16%: &nbsp; &nbsp;</strong>
-                    </td>
-                    <td style="align: right; width: 190px; border-bottom:1.5px single silver;">${record.taxtotal}   </td>
+                      </td>
+                      <td style="align: right; width: 90px; border-bottom:1.5px single silver;">${record.taxtotal}   </td>
                   </tr>
+
+                  <#if (tax.retencion_total?number > 0)>
+                      <tr>
+                          <td style="align: right; width: 180px;">
+                              <strong>RETENCIÓN: &nbsp; &nbsp;</strong>
+                          </td>
+                          <td style="align: right; width: 90px; single silver;"> -$${tax.retencion_total}</td>
+                      </tr>
+                  </#if>
+
                   <tr>
-                    <td style="align: right; width: 90px;">
+                      <td style="align: right; width: 180px;">
                       <strong>TOTAL: &nbsp; &nbsp;</strong>
-                    </td>
-                    <td style="align: right; width: 190px;">${record.total}    </td>
+                      </td>
+                      <td style="align: right; width: 90px;">${record.total}</td>
                   </tr>
-                </tbody>
+                  </tbody>
               </table>
-            </td>
+              </td>
           </tr>
-        </tbody>
+          </tbody>
       </table>
     </#if>
 
